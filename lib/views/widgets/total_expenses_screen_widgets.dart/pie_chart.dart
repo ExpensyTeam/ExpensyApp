@@ -1,37 +1,88 @@
-// import 'package:flutter/material.dart';
-// // import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:expensy/views/themes/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
-// class PieChartWidget extends StatelessWidget {
-//   final List<charts.Series<dynamic, String>> seriesList;
+class TransactionPieChart extends StatelessWidget {
+  final List<Transactionn> transactions = [
+    Transactionn('Food', 100),
+    Transactionn('Entertainment', 200),
+    Transactionn('Transport', 50),
+    Transactionn('Utilities', 150),
+  ];
 
-//   PieChartWidget({required this.seriesList});
+  @override
+  Widget build(BuildContext context) {
+    double totalAmount = transactions.fold(0, (sum, item) => sum + item.amount);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return charts.PieChart(
-//       seriesList,
-//       animate: true,
-//       behaviors: [
-//         charts.DatumLegend(
-//           outsideJustification: charts.OutsideJustification.endDrawArea,
-//           horizontalFirst: false,
-//           desiredMaxRows: 2,
-//           cellPadding: EdgeInsets.only(right: 4.0, bottom: 4.0),
-//           entryTextStyle: charts.TextStyleSpec(
-//             color: charts.MaterialPalette.white,
-//             fontFamily: 'Georgia',
-//             fontSize: 11,
-//           ),
-//         )
-//       ],
-//       defaultRenderer: charts.ArcRendererConfig(
-//         arcWidth: 60,
-//         arcRendererDecorators: [
-//           charts.ArcLabelDecorator(
-//             labelPosition: charts.ArcLabelPosition.inside,
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+    List<_PieData> pieData = transactions.map((transaction) {
+      double percentage = (transaction.amount / totalAmount) * 100;
+      return _PieData(
+        transaction.type,
+        percentage,
+        '${percentage.toStringAsFixed(1)}%',
+        _getColor(transaction.type),
+      );
+    }).toList();
+
+    return Container(
+      margin: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: DarkMode.primaryColor,
+        borderRadius: BorderRadius.all(Radius.circular(40)),
+      ),
+      child: Center(
+        child: SfCircularChart(
+          legend: Legend(
+            isVisible: true,
+            textStyle: TextStyle(color: Colors.white),
+          ),
+          series: <PieSeries<_PieData, String>>[
+            PieSeries<_PieData, String>(
+              explode: true,
+              explodeIndex: 0,
+              dataSource: pieData,
+              xValueMapper: (_PieData data, _) => data.xData,
+              yValueMapper: (_PieData data, _) => data.yData,
+              dataLabelMapper: (_PieData data, _) => data.text,
+              pointColorMapper: (_PieData data, _) => data.color,
+              dataLabelSettings: DataLabelSettings(
+                isVisible: true,
+                textStyle: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getColor(String type) {
+    switch (type) {
+      case 'Food':
+        return DarkMode.pieChartColor1;
+      case 'Entertainment':
+        return DarkMode.pieChartColor3;
+      case 'Transport':
+        return DarkMode.pieChartColor4;
+      case 'Utilities':
+        return DarkMode.pieChartColor5;
+      default:
+        return DarkMode.pieChartColor6;
+    }
+  }
+}
+
+class _PieData {
+  _PieData(this.xData, this.yData, this.text, this.color);
+  final String xData;
+  final num yData;
+  final String? text;
+  final Color color;
+}
+
+class Transactionn {
+  final String type;
+  final double amount;
+
+  Transactionn(this.type, this.amount);
+}

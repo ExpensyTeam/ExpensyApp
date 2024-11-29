@@ -78,52 +78,6 @@ class BuildTextButtons extends StatelessWidget {
     );
   }
 
-  // Widget _buildButtonText(String label, IconData icon) {
-  //   // Check if the button is selected
-  //   final bool isSelected = label == selectedButton;
-
-  //   return ElevatedButton(
-  //     onPressed: () => onButtonPressed(label), // Callback to update the state
-  //     style: ElevatedButton.styleFrom(
-  //       backgroundColor: isSelected
-  //           ? DarkMode.buttonColor // Selected button color
-  //           : Color.fromRGBO(16, 29, 39, 1),
-  //       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
-  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-  //     ),
-  //     child: Center(
-  //       child: Row(
-  //         mainAxisSize: MainAxisSize.min, // Shrink to fit content
-  //         mainAxisAlignment:
-  //             MainAxisAlignment.center, // Center content horizontally
-  //         crossAxisAlignment:
-  //             CrossAxisAlignment.center, // Center content vertically
-  //         children: [
-  //           Container(
-  //             width: 30,
-  //             height: 30,
-  //             decoration: BoxDecoration(
-  //               color: isSelected
-  //                   ? DarkMode.iconBackground2
-  //                   : DarkMode.iconBackground,
-  //               borderRadius: BorderRadius.all(Radius.circular(7)),
-  //             ),
-  //             child: Icon(
-  //               icon, // Use the dynamic icon
-  //               color: Colors.white,
-  //               size: 25,
-  //             ),
-  //           ),
-  //           const SizedBox(width: 10),
-  //           Text(
-  //             label,
-  //             style: const TextStyle(fontSize: 13, color: Colors.white),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
   Widget _buildButtonText(String label, IconData icon) {
     // Check if the button is selected
     final bool isSelected = label == selectedButton;
