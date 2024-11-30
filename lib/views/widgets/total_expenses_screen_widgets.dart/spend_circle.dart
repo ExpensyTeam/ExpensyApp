@@ -1,15 +1,34 @@
-import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:expensy/views/themes/colors.dart';
+import 'package:intl/intl.dart';
 
 class SpendCircleWidget extends StatelessWidget {
-  const SpendCircleWidget({super.key});
+  final DateTime selectedDate;
+
+  const SpendCircleWidget({super.key, required this.selectedDate});
+
+  double _getTotalSpend(DateTime date) {
+    // Filter the transactions based on the selected date
+
+    return 600.0;
+  }
+
+  double _getBudget() {
+    // You can replace this with logic to get the user's total budget
+    return 3000.0; // Example: $3000 total budget
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Fetch the total spend and calculate the percentage
+    double totalSpend = _getTotalSpend(selectedDate);
+    double budget = _getBudget();
+    double percentageSpent = (totalSpend / budget) * 100;
+
     return Column(
       children: [
         Stack(
-          alignment: Alignment.center, // Center the content within the stack
+          alignment: Alignment.center,
           children: [
             // Outer border
             Container(
@@ -31,10 +50,10 @@ class SpendCircleWidget extends StatelessWidget {
                       color: const Color.fromRGBO(82, 92, 101, 1), width: 10),
                   color: DarkMode.buttonColor),
             ),
-            // Center content
+            // Center content (display the total spend)
             Center(
               child: Text(
-                "\$1600",
+                "\$$totalSpend",
                 style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ),
@@ -46,11 +65,15 @@ class SpendCircleWidget extends StatelessWidget {
         Container(
           width: 140,
           child: Text(
-            "You have Spend total 60% of your budget",
+            "You have spent $percentageSpent% of your budget",
             style: TextStyle(color: Colors.white),
-            maxLines: 2, // Set the maximum number of lines
-            overflow: TextOverflow.ellipsis, // Optional: Add
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
           ),
+        ),
+        SizedBox(
+          height: 10,
         )
       ],
     );

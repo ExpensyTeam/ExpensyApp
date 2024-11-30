@@ -3,6 +3,7 @@ import 'package:expensy/Data/transactions.dart';
 import 'package:expensy/utils/transaction.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class MainOverview extends StatefulWidget {
   @override
@@ -140,7 +141,7 @@ class BuildTextButtons extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: const TextStyle(fontSize: 13, color: Colors.white),
+                style: const TextStyle(fontSize: 12, color: Colors.white),
               ),
             ],
           ),
