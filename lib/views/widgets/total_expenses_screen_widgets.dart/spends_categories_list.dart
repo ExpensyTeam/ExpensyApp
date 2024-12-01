@@ -20,7 +20,8 @@ class _SpendsCategoriesListState extends State<SpendsCategoriesList> {
     return Column(
       children: [
         SpendCategorySelector(),
-        if (!isSpendViewSelected) TransactionPieChart(),
+        // if (!isSpendViewSelected) TransactionPieChart(),
+        if (!isSpendViewSelected) TransactionSemiDoughnutChart(),
         SpendList(),
       ],
     );

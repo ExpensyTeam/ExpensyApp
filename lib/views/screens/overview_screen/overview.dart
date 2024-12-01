@@ -43,10 +43,12 @@ class _OverviewState extends State<Overview> {
     return SafeArea(
       child: Scaffold(
           appBar: CustomizedAppBar(
-              title: "Overview",
-              showImage: true,
-              showBackButton: false,
-              backgroundColor: DarkMode.neutralColor),
+            title: "Overview",
+            showImage: true,
+            showBackButton: false,
+            backgroundColor: DarkMode.neutralColor,
+            titleAlignment: MainAxisAlignment.center,
+          ),
           body: Container(
             decoration: BoxDecoration(
               color: DarkMode.primaryColor,

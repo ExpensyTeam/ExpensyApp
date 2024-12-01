@@ -40,7 +40,7 @@ class _TopOverviewState extends State<TopOverview> {
       case "Investments":
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Investements()),
+          MaterialPageRoute(builder: (context) => Investments()),
         );
         break;
       default:

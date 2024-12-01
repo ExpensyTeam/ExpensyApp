@@ -1,6 +1,8 @@
 import 'package:expensy/views/screens/overview_screen/overview.dart';
 import 'package:expensy/views/themes/colors.dart';
+import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
+import 'package:expensy/views/widgets/floating_action_button.dart';
 import 'package:flutter/material.dart';
 
 class Savings extends StatefulWidget {
@@ -45,16 +47,22 @@ class _SavingsState extends State<Savings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Savings"),
-        backgroundColor: DarkMode.neutralColor,
+      appBar: CustomizedAppBar(
+        title: "Savings",
+        titleAlignment: MainAxisAlignment.center,
+        showImage: false,
+        showBackButton: true,
+        backgroundColor: DarkMode.backgroundColor,
       ),
-      backgroundColor: DarkMode.backgroundColor,
+      floatingActionButton: FloatingActionButtonWidget(
+        onPressed: () => {print("This is the floating button")},
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomNavBar(
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
+      backgroundColor: DarkMode.primaryColor,
       body: Center(
         child: Text(
           "This is the Savings screen.",

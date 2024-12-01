@@ -1,6 +1,7 @@
 import 'package:expensy/Data/iconMapping.dart';
 import 'package:expensy/Data/transactions.dart';
 import 'package:expensy/utils/transaction.dart';
+import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -63,24 +64,24 @@ class BuildTextButtons extends StatelessWidget {
         children: [
           SizedBox(
             width: width,
-            child: _buildButtonText("Saving", Icons.add),
-          ),
-          SizedBox(
-            width: width,
-            child: _buildButtonText("Reminder", Icons.notifications_none),
+            child: _buildButtonText("Saving", Icons.add, Savings()),
           ),
           SizedBox(
             width: width,
             child: _buildButtonText(
-                "Budget", Icons.account_balance_wallet_outlined),
+                "Reminder", Icons.notifications_none, Savings()),
+          ),
+          SizedBox(
+            width: width,
+            child: _buildButtonText(
+                "Budget", Icons.account_balance_wallet_outlined, Savings()),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildButtonText(String label, IconData icon) {
-    // Check if the button is selected
+  Widget _buildButtonText(String label, IconData icon, Widget targetScreen) {
     final bool isSelected = label == selectedButton;
 
     return Container(
@@ -88,64 +89,75 @@ class BuildTextButtons extends StatelessWidget {
           ? BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: DarkMode.buttonColor.withOpacity(0.5), // Shadow color
-                  blurRadius: 12, // Spread of the shadow
-                  offset: Offset(0, 3), // Shadow position
+                  color: DarkMode.buttonColor.withOpacity(0.5),
+                  blurRadius: 12,
+                  offset: Offset(0, 3),
                 ),
               ],
             )
-          : null, // No shadow if not selected
-      child: ElevatedButton(
-        onPressed: () => onButtonPressed(label), // Callback to update the state
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected
-              ? DarkMode.buttonColor // Selected button color
-              : Color.fromRGBO(16, 29, 39, 1),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-        child: Center(
-          child: Row(
-            mainAxisSize: MainAxisSize.min, // Shrink to fit content
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Center content horizontally
-            crossAxisAlignment:
-                CrossAxisAlignment.center, // Center content vertically
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? DarkMode.iconBackground2
-                      : DarkMode.iconBackground,
-                  borderRadius: const BorderRadius.all(Radius.circular(7)),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: DarkMode.buttonColor.withOpacity(0.7),
-                            blurRadius: 3,
-                            offset: Offset(0, 3),
-                          ),
-                        ]
-                      : [],
-                ),
-                child: Icon(
-                  icon, // Use the dynamic icon
-                  color: Colors.white,
-                  size: 25,
-                ),
+          : null,
+      child: Builder(
+        builder: (BuildContext context) {
+          // Builder widget provides the context
+          return ElevatedButton(
+            onPressed: () {
+              onButtonPressed(label); // Update the state
+
+              // Now we have access to context here
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => targetScreen),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isSelected
+                  ? DarkMode.buttonColor
+                  : Color.fromRGBO(16, 29, 39, 1),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 7),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(width: 10),
-              Text(
-                label,
-                style: const TextStyle(fontSize: 12, color: Colors.white),
+            ),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? DarkMode.iconBackground2
+                          : DarkMode.iconBackground,
+                      borderRadius: const BorderRadius.all(Radius.circular(7)),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: DarkMode.buttonColor.withOpacity(0.7),
+                                blurRadius: 3,
+                                offset: Offset(0, 3),
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: Icon(
+                      icon,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    label,
+                    style: const TextStyle(fontSize: 12, color: Colors.white),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
