@@ -23,3 +23,16 @@ final List<CardData> cardDataList_data = [
     icon: Icons.account_balance_wallet_outlined,
   ),
 ];
+
+final List<CardData> addCardDataList_data = [
+  CardData(
+    name: "Add Income",
+    amount: "",
+    icon: Icons.account_balance_wallet_outlined,
+  ),
+  CardData(
+    name: "Add Expense",
+    amount: "",
+    icon: Icons.account_balance_wallet_outlined,
+  ),
+];

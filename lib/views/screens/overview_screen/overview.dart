@@ -1,3 +1,4 @@
+import 'package:expensy/views/screens/overview_screen/add.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
@@ -64,7 +65,12 @@ class _OverviewState extends State<Overview> {
             ),
           ),
           floatingActionButton: FloatingActionButtonWidget(
-            onPressed: () => {print("this is floating button")},
+            onPressed: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Add()),
+              )
+            },
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,

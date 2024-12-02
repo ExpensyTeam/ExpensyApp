@@ -1,47 +1,33 @@
 import 'package:expensy/views/screens/overview_screen/add.dart';
 import 'package:expensy/views/screens/overview_screen/overview.dart';
+import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
 import 'package:expensy/views/widgets/floating_action_button.dart';
 import 'package:flutter/material.dart';
 
-class Savings extends StatefulWidget {
+class AddIncome extends StatefulWidget {
+  const AddIncome({Key? key}) : super(key: key);
+
   @override
-  State<Savings> createState() => _SavingsState();
+  _AddIncomeState createState() => _AddIncomeState();
 }
 
-class _SavingsState extends State<Savings> {
-  int _selectedIndex = 1; // Set to 1 since this is the Savings screen.
+class _AddIncomeState extends State<AddIncome> {
+  int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    // Navigate to the respective screen
     if (index == 0) {
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const Overview()),
-      );
+          context, MaterialPageRoute(builder: (_) => const Overview()));
     } else if (index == 1) {
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => Savings()), // Current screen
-      );
-    } else if (index == 2) {
-      // Uncomment and add the Notification screen when available
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => const NotificationScreen()),
-      // );
-    } else if (index == 3) {
-      // Uncomment and add the Settings screen when available
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => const SettingsScreen()),
-      // );
+          context, MaterialPageRoute(builder: (_) => Savings()));
     }
   }
 
@@ -49,11 +35,11 @@ class _SavingsState extends State<Savings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomizedAppBar(
-        title: "Savings",
+        title: "Add Income",
         titleAlignment: MainAxisAlignment.center,
         showImage: false,
         showBackButton: true,
-        backgroundColor: DarkMode.backgroundColor,
+        backgroundColor: DarkMode.neutralColor,
       ),
       floatingActionButton: FloatingActionButtonWidget(
         onPressed: () => {
@@ -68,13 +54,13 @@ class _SavingsState extends State<Savings> {
         selectedIndex: _selectedIndex,
         onItemTapped: _onItemTapped,
       ),
-      backgroundColor: DarkMode.primaryColor,
       body: Center(
         child: Text(
-          "This is the Savings screen.",
+          "This is the Add Income screen.",
           style: TextStyle(fontSize: 18, color: Colors.white),
         ),
       ),
+      backgroundColor: DarkMode.backgroundColor,
     );
   }
 }
