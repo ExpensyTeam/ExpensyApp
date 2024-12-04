@@ -160,7 +160,7 @@ class _AddState extends State<Add> {
     return Expanded(
       child: Container(
         height: MediaQuery.of(context).size.height * 0.56,
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.all(5),
         decoration: BoxDecoration(
           color: DarkMode.neutralColor,
           borderRadius: BorderRadius.only(
@@ -171,7 +171,7 @@ class _AddState extends State<Add> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(15.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
