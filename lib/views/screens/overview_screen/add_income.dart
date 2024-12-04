@@ -41,19 +41,6 @@ class _AddIncomeState extends State<AddIncome> {
         showBackButton: true,
         backgroundColor: DarkMode.neutralColor,
       ),
-      floatingActionButton: FloatingActionButtonWidget(
-        onPressed: () => {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Add()),
-          )
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
       body: Center(
         child: Text(
           "This is the Add Income screen.",
