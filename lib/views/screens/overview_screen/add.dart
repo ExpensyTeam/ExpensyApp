@@ -49,16 +49,16 @@ class _AddState extends State<Add> {
     });
 
     switch (cardName) {
-      case "Add Income":
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => AddIncome()),
-        );
-        break;
       case "Add Expense":
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => AddExpense()),
+        );
+        break;
+      case "Add Income":
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AddIncome()),
         );
         break;
       default:

@@ -48,58 +48,56 @@ class _TotalExpensesScreenState extends State<TotalExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: DarkMode.primaryColor,
-        appBar: CustomizedAppBar(
-          title: "Total Expenses",
-          titleAlignment: MainAxisAlignment.spaceEvenly,
-          showImage: false,
-          showBackButton: true,
-          backgroundColor: DarkMode.neutralColor,
-        ),
-        floatingActionButton: FloatingActionButtonWidget(
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Add()),
-            )
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CustomBottomNavBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: _onItemTapped,
-        ),
-        body: ListView(
-          children: [
-            // CalendarWidget with a callback to update selected date
-            Container(
-              decoration: BoxDecoration(
-                color: DarkMode.neutralColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(30),
-              child: CalendarWidget(
-                selectedDate: _selectedDate,
-                onDateSelected: _updateSelectedDate, // Pass the update function
-              ),
-            ),
-            SpendCircleWidget(selectedDate: _selectedDate),
-            SizedBox(height: 15),
-            Container(
-              decoration: BoxDecoration(
-                color: DarkMode.neutralColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30.0),
-                  topRight: Radius.circular(30.0),
-                ),
-              ),
-              child: SpendsCategoriesList(),
-            ),
-          ],
-        ),
+        child: Scaffold(
+      backgroundColor: DarkMode.primaryColor,
+      appBar: CustomizedAppBar(
+        title: "Total Expenses",
+        titleAlignment: MainAxisAlignment.spaceEvenly,
+        showImage: false,
+        showBackButton: true,
+        backgroundColor: DarkMode.neutralColor,
       ),
-    );
+      floatingActionButton: FloatingActionButtonWidget(
+        onPressed: () => {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Add()),
+          )
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: CustomBottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
+      ),
+      body: ListView(children: [
+        // CalendarWidget with a callback to update selected date
+        Container(
+          decoration: BoxDecoration(
+            color: DarkMode.neutralColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(30),
+          child: CalendarWidget(
+            selectedDate: _selectedDate,
+            onDateSelected: _updateSelectedDate, // Pass the update function
+          ),
+        ),
+
+        SpendCircleWidget(selectedDate: _selectedDate),
+
+        SizedBox(height: 15),
+        // DraggableScrollableSheet(
+        //   initialChildSize: 0.68,
+        //   minChildSize: 0.68,
+        //   maxChildSize: 1,
+        //   builder: (context, scrollController) {
+        //     return SpendsCategoriesList(scrollController: scrollController);
+        //   },
+        // )
+        SpendsCategoriesList()
+      ]),
+    ));
   }
 }
