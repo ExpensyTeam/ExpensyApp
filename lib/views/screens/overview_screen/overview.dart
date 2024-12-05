@@ -54,13 +54,22 @@ class _OverviewState extends State<Overview> {
             decoration: BoxDecoration(
               color: DarkMode.primaryColor,
             ),
-            child: Column(
+            child: Stack(
               children: [
                 TopOverview(),
                 SizedBox(
                   height: 15,
                 ),
-                Expanded(child: MainOverview())
+                DraggableScrollableSheet(
+                  initialChildSize: 0.68,
+                  minChildSize: 0.68,
+                  maxChildSize: 1,
+                  builder: (context, scrollController) {
+                    return Expanded(
+                        child:
+                            MainOverview(scrollController: scrollController));
+                  },
+                ),
               ],
             ),
           ),

@@ -7,12 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class MainOverview extends StatefulWidget {
+  final ScrollController scrollController;
+
+  const MainOverview({required this.scrollController});
+
   @override
   _MainOverviewState createState() => _MainOverviewState();
 }
 
 class _MainOverviewState extends State<MainOverview> {
-  // Track the currently selected button
   String _selectedButton = "Saving"; // Default selection
 
   @override
@@ -38,7 +41,11 @@ class _MainOverviewState extends State<MainOverview> {
             },
           ),
           BuildProgressBar(selectedButton: _selectedButton),
-          Expanded(child: MainOverviewList()),
+          Expanded(
+            child: MainOverviewList(
+              scrollController: widget.scrollController,
+            ),
+          ),
         ],
       ),
     );
@@ -199,6 +206,10 @@ class BuildProgressBar extends StatelessWidget {
 }
 
 class MainOverviewList extends StatefulWidget {
+  final ScrollController scrollController;
+
+  const MainOverviewList({required this.scrollController});
+
   @override
   _MainOverviewListState createState() => _MainOverviewListState();
 }
@@ -206,7 +217,6 @@ class MainOverviewList extends StatefulWidget {
 class _MainOverviewListState extends State<MainOverviewList> {
   List<Transaction> transactions = transactions_data;
 
-  // Define a map to associate transaction types with specific icons
   final Map<String, IconData> iconMapping = iconMapping_data;
 
   @override
@@ -224,9 +234,7 @@ class _MainOverviewListState extends State<MainOverviewList> {
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               ElevatedButton(
-                onPressed: () => {
-                  print("this is three point button")
-                }, // Define your onPressed logic
+                onPressed: () => print("this is three point button"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DarkMode.neutralColor,
                   fixedSize: const Size(10, 10),
@@ -250,11 +258,11 @@ class _MainOverviewListState extends State<MainOverviewList> {
         SizedBox(height: 15),
         Expanded(
           child: ListView.builder(
-            shrinkWrap: true,
+            controller:
+                widget.scrollController, // Use the passed scrollController
             itemCount: transactions.length,
             itemBuilder: (context, index) {
               final transaction = transactions[index];
-
               final icon = iconMapping[transaction.type] ?? Icons.help_outline;
 
               return ListTile(
@@ -263,11 +271,10 @@ class _MainOverviewListState extends State<MainOverviewList> {
                   height: 45,
                   decoration: BoxDecoration(
                     color: DarkMode.iconBackground,
-                    borderRadius:
-                        BorderRadius.circular(10), // Adjust radius as needed
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    icon, // Use the corresponding icon for the transaction type
+                    icon,
                     color: Colors.white,
                     size: 30,
                   ),
