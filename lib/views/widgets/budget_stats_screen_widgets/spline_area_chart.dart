@@ -78,21 +78,42 @@ class _SplineAreaChartState extends State<SplineAreaChart> {
 
     return Column(children: [
       // Dropdown to select year
-      DropdownButton<int>(
-        value: selectedYear,
-        menuWidth: 200,
-        items: List.generate(10, (index) {
-          int year = DateTime.now().year - index; // Generate the last 10 years
-          return DropdownMenuItem<int>(
-            value: year,
-            child: Text(year.toString()),
-          );
-        }),
-        onChanged: (value) {
-          setState(() {
-            selectedYear = value!;
-          });
-        },
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text(
+              "Choose a given year :",
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+            Container(
+              width: 100,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+                color: DarkMode.neutralColor,
+              ),
+              // padding: EdgeInsets.all(10),
+              child: DropdownButton<int>(
+                value: selectedYear,
+                items: List.generate(10, (index) {
+                  int year =
+                      DateTime.now().year - index; // Generate the last 10 years
+                  return DropdownMenuItem<int>(
+                    value: year,
+                    child: Text(year.toString()),
+                  );
+                }),
+                onChanged: (value) {
+                  setState(() {
+                    selectedYear = value!;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       // Chart displaying data for the selected year
       Padding(
