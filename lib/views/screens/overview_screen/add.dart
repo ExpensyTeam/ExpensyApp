@@ -271,8 +271,8 @@ class _AddState extends State<Add> {
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final transaction = transactions[index];
-                      final icon =
-                          iconMapping[transaction.type] ?? Icons.help_outline;
+                      final icon = iconMapping[transaction.type] ??
+                          Icons.attach_money_rounded;
 
                       return ListTile(
                         leading: Container(

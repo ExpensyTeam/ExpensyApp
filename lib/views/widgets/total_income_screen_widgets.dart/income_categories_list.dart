@@ -5,18 +5,18 @@ import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/pie_chart.dart';
 import 'package:flutter/material.dart';
 
-class SpendsCategoriesList extends StatefulWidget {
+class IncomeCategoriesList extends StatefulWidget {
   // final ScrollController scrollController;
 
-  // const SpendsCategoriesList({required this.scrollController});
+  // const IncomeCategoriesList({required this.scrollController});
 
   @override
-  _SpendsCategoriesListState createState() => _SpendsCategoriesListState();
+  _IncomeCategoriesListState createState() => _IncomeCategoriesListState();
 }
 
-class _SpendsCategoriesListState extends State<SpendsCategoriesList> {
-  List<Transaction> expenses = transactions_data
-      .where((transaction) => transaction.amount.startsWith('-'))
+class _IncomeCategoriesListState extends State<IncomeCategoriesList> {
+  List<Transaction> incomes = transactions_data
+      .where((transaction) => transaction.amount.startsWith('+'))
       .toList();
   final Map<String, IconData> iconMapping = iconMapping_data ?? {};
 
@@ -50,7 +50,7 @@ class _SpendsCategoriesListState extends State<SpendsCategoriesList> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildCategoryButton("Spends", isSpendViewSelected, () {
+          _buildCategoryButton("Incomes", isSpendViewSelected, () {
             setState(() => isSpendViewSelected = true);
           }),
           _buildCategoryButton("Categories", !isSpendViewSelected, () {
@@ -97,9 +97,9 @@ class _SpendsCategoriesListState extends State<SpendsCategoriesList> {
     return ListView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      itemCount: expenses.length,
+      itemCount: incomes.length,
       itemBuilder: (context, index) {
-        final transaction = expenses[index];
+        final transaction = incomes[index];
         final icon =
             iconMapping[transaction.type] ?? Icons.attach_money_outlined;
 

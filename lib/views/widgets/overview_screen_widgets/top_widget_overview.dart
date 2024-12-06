@@ -22,7 +22,7 @@ class _TopOverviewState extends State<TopOverview> {
       case "Total Income":
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => TotalIncome()),
+          MaterialPageRoute(builder: (context) => TotalIncomeScreen()),
         );
         break;
       case "Total Expenses":

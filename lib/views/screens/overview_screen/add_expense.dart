@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; // Make sure intl is imported
 import 'package:expensy/Data/categoriesData.dart'; // categoriesList_data is imported here
 import 'package:expensy/views/screens/overview_screen/overview.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/calender.dart';
+import 'package:expensy/utils/transaction.dart';
+import 'package:expensy/Data/transactions.dart';
 
 class AddExpense extends StatefulWidget {
   const AddExpense({Key? key}) : super(key: key);
@@ -15,6 +17,8 @@ class AddExpense extends StatefulWidget {
 }
 
 class _AddExpenseState extends State<AddExpense> {
+  List<Transaction> transactions = transactions_data;
+
   int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now();
   String _selectedCategory = ""; // Updated for clarity
@@ -46,6 +50,9 @@ class _AddExpenseState extends State<AddExpense> {
 
   @override
   Widget build(BuildContext context) {
+    // Format the date to show as "12 February 2024"
+    final formattedDate = DateFormat('d MMMM yyyy').format(_selectedDate);
+
     return Scaffold(
       appBar: CustomizedAppBar(
         title: "Add Expense",
@@ -71,42 +78,86 @@ class _AddExpenseState extends State<AddExpense> {
                 onDateSelected: _updateSelectedDate,
               ),
             ),
+            // Display the formatted date
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(vertical: 10),
+            //   child: Text(
+            //     'Selected Date: $formattedDate', // Show formatted date
+            //     style: TextStyle(
+            //       color: Colors.white,
+            //       fontSize: 16,
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
             ExpenseForm(),
             ExpanseCategories(),
             Padding(
-              padding: const EdgeInsets.all(
-                  8.0), // Outer padding (margin-like effect)
+              padding: const EdgeInsets.all(8.0),
               child: Container(
-                margin: EdgeInsetsDirectional.only(
-                    bottom:
-                        16), // Outer margin around the button (distance from other widgets)
+                margin: const EdgeInsetsDirectional.only(bottom: 16),
                 child: ElevatedButton(
                   onPressed: () {
                     final expenseTitle = _expenseTitleController.text;
-                    final amount = _amountController.text;
+                    final amountText = _amountController.text;
+                    final category = _selectedCategory;
 
-                    // Process data
-                    print('Expense Title: $expenseTitle');
-                    print('Amount: $amount');
-                    print('Date: $_selectedDate');
-                    print('Selected Category: $_selectedCategory');
+                    if (expenseTitle.isNotEmpty &&
+                        amountText.isNotEmpty &&
+                        category.isNotEmpty) {
+                      final amount = double.tryParse(amountText);
+
+                      if (amount != null && amount > 0) {
+                        // Add the transaction to the list
+                        setState(() {
+                          transactions.add(Transaction(
+                              type: expenseTitle,
+                              amount: "-\$$amount",
+                              date: formattedDate.toString(),
+                              vat: "0.9%",
+                              method: "card"));
+                        });
+
+                        // Clear inputs
+                        _expenseTitleController.clear();
+                        _amountController.clear();
+                        _selectedCategory = "";
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Transaction added successfully!')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Invalid amount!')),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Please fill all fields!')),
+                      );
+                    }
                   },
-                  child: Text(
-                    'ADD EXPENSE',
-                    style: TextStyle(color: Colors.white, fontSize: 17),
-                  ),
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all(DarkMode.buttonColor),
-                    minimumSize: MaterialStateProperty.all(Size(325, 50)),
-                    padding: MaterialStateProperty.all(EdgeInsets.symmetric(
+                    minimumSize: MaterialStateProperty.all(const Size(325, 50)),
+                    padding: MaterialStateProperty.all(
+                      const EdgeInsets.symmetric(
                         vertical: 12.0,
-                        horizontal: 24.0)), // Padding inside the button
+                        horizontal: 24.0,
+                      ),
+                    ),
                     shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
+                  ),
+                  child: const Text(
+                    'ADD EXPENSE',
+                    style: TextStyle(color: Colors.white, fontSize: 17),
                   ),
                 ),
               ),
@@ -252,7 +303,7 @@ class _AddExpenseState extends State<AddExpense> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Expense Title"),
+                Text("Income Title"),
                 SizedBox(height: 10),
                 TextField(
                   controller: _expenseTitleController,
