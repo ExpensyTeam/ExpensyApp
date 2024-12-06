@@ -1,21 +1,21 @@
 import 'package:expensy/views/screens/overview_screen/add.dart';
+import 'package:expensy/views/screens/overview_screen/overview.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
+import 'package:expensy/views/widgets/budget_stats_screen_widgets/spline_area_chart.dart';
 import 'package:expensy/views/widgets/floating_action_button.dart';
-import 'package:expensy/views/widgets/overview_screen_widgets/main_widget_overview.dart';
-import 'package:expensy/views/widgets/overview_screen_widgets/top_widget_overview.dart';
 import 'package:flutter/material.dart';
 
-class Overview extends StatefulWidget {
-  const Overview({Key? key}) : super(key: key);
+class BudgetStats extends StatefulWidget {
+  const BudgetStats({super.key});
 
   @override
-  State<Overview> createState() => _OverviewState();
+  State<BudgetStats> createState() => _BudgetStatsState();
 }
 
-class _OverviewState extends State<Overview> {
+class _BudgetStatsState extends State<BudgetStats> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -44,7 +44,7 @@ class _OverviewState extends State<Overview> {
     return SafeArea(
       child: Scaffold(
         appBar: CustomizedAppBar(
-          title: "Overview",
+          title: "Budget And Statistics",
           showImage: true,
           showBackButton: false,
           backgroundColor: DarkMode.neutralColor,
@@ -63,28 +63,9 @@ class _OverviewState extends State<Overview> {
           selectedIndex: _selectedIndex,
           onItemTapped: _onItemTapped,
         ),
-        body: Container(
-          decoration: BoxDecoration(
-            color: DarkMode.primaryColor,
-          ),
-          child: Stack(
-            children: [
-              TopOverview(),
-              SizedBox(
-                height: 15,
-              ),
-              DraggableScrollableSheet(
-                initialChildSize: 0.68,
-                minChildSize: 0.68,
-                maxChildSize: 1,
-                builder: (context, scrollController) {
-                  return Expanded(
-                      child: MainOverview(scrollController: scrollController));
-                },
-              ),
-            ],
-          ),
-        ),
+        backgroundColor: DarkMode.backgroundColor,
+        body: ListView(
+            scrollDirection: Axis.vertical, children: [SplineAreaChart()]),
       ),
     );
   }

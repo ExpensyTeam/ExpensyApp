@@ -1,6 +1,7 @@
 import 'package:expensy/Data/iconMapping.dart';
 import 'package:expensy/Data/transactions.dart';
 import 'package:expensy/utils/transaction.dart';
+import 'package:expensy/views/screens/budget_stats_screen/budget_stats.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,7 @@ class BuildTextButtons extends StatelessWidget {
           SizedBox(
             width: width,
             child: _buildButtonText(
-                "Budget", Icons.account_balance_wallet_outlined, Savings()),
+                "Budget", Icons.account_balance_wallet_outlined, BudgetStats()),
           ),
         ],
       ),
