@@ -7,6 +7,8 @@ import 'package:expensy/views/widgets/floating_action_button.dart';
 import 'package:expensy/views/widgets/overview_screen_widgets/main_widget_overview.dart';
 import 'package:expensy/views/widgets/overview_screen_widgets/top_widget_overview.dart';
 import 'package:flutter/material.dart';
+import 'package:expensy/views/screens/notifications_screen/notifications_screen.dart';
+import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 
 class Overview extends StatefulWidget {
   const Overview({Key? key}) : super(key: key);
@@ -31,11 +33,14 @@ class _OverviewState extends State<Overview> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => Savings()));
     } else if (index == 2) {
-      // Navigator.pushReplacement(context,
-      //     MaterialPageRoute(builder: (_) => const NotificationScreen()));
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()));
     } else if (index == 3) {
-      // Navigator.pushReplacement(
-      //     context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+      // Uncomment and add the Settings screen when available
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ReminderList()),
+      );
     }
   }
 
@@ -43,49 +48,50 @@ class _OverviewState extends State<Overview> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomizedAppBar(
-          title: "Overview",
-          showImage: true,
-          showBackButton: false,
-          backgroundColor: DarkMode.neutralColor,
-          titleAlignment: MainAxisAlignment.center,
-        ),
-        floatingActionButton: FloatingActionButtonWidget(
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Add()),
-            )
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CustomBottomNavBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: _onItemTapped,
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            color: DarkMode.primaryColor,
+          appBar: CustomizedAppBar(
+            title: "Overview",
+            showImage: true,
+            showBackButton: false,
+            backgroundColor: DarkMode.neutralColor,
+            titleAlignment: MainAxisAlignment.center,
           ),
-          child: Stack(
-            children: [
-              TopOverview(),
-              SizedBox(
-                height: 15,
-              ),
-              DraggableScrollableSheet(
-                initialChildSize: 0.68,
-                minChildSize: 0.68,
-                maxChildSize: 1,
-                builder: (context, scrollController) {
-                  return Expanded(
-                      child: MainOverview(scrollController: scrollController));
-                },
-              ),
-            ],
+          body: Container(
+            decoration: BoxDecoration(
+              color: DarkMode.primaryColor,
+            ),
+            child: Stack(
+              children: [
+                TopOverview(),
+                SizedBox(
+                  height: 15,
+                ),
+                DraggableScrollableSheet(
+                  initialChildSize: 0.68,
+                  minChildSize: 0.68,
+                  maxChildSize: 1,
+                  builder: (context, scrollController) {
+                    return Expanded(
+                        child:
+                            MainOverview(scrollController: scrollController));
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+          floatingActionButton: FloatingActionButtonWidget(
+            onPressed: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Add()),
+              )
+            },
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          bottomNavigationBar: CustomBottomNavBar(
+            selectedIndex: _selectedIndex,
+            onItemTapped: _onItemTapped,
+          )),
     );
   }
 }

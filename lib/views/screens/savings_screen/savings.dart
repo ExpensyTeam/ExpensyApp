@@ -5,6 +5,8 @@ import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
 import 'package:expensy/views/widgets/floating_action_button.dart';
 import 'package:flutter/material.dart';
+import 'package:expensy/views/screens/notifications_screen/notifications_screen.dart';
+import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 
 class Savings extends StatefulWidget {
   @override
@@ -32,16 +34,16 @@ class _SavingsState extends State<Savings> {
       );
     } else if (index == 2) {
       // Uncomment and add the Notification screen when available
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => const NotificationScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+      );
     } else if (index == 3) {
       // Uncomment and add the Settings screen when available
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (_) => const SettingsScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ReminderList()),
+      );
     }
   }
 
