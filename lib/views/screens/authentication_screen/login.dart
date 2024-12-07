@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../widgets/login_screen_widgets/error_message.dart';
 import 'change_password.dart';
+import 'signup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -14,7 +15,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true; // For toggling password visibility
-  bool registered = false;
+  String user_name = "";
+  String password = "";
   String? errorMessage;
 
   @override
@@ -44,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 10),
               const Text(
-                'Epensy',
+                'Expensy',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -145,15 +147,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 onPressed: () {
-                  //_usernameController.text;
-                  // _passwordController.text;
+                  user_name = _usernameController.text;
+                  password = _passwordController.text;
 
-                  if (registered) {
+                  if (user_name == "ahmed" && password == "123") {
+                    Navigator.of(context).pushReplacementNamed('/home');
+                  } else
                     setState(() {
                       errorMessage = "Incorrect username or password";
                     });
-                  } else
-                    Navigator.of(context).pushReplacementNamed('/home');
                 },
                 child: const Center(
                   child: Text(
@@ -235,7 +237,11 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to register
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage()),
+                      );
                     },
                     child: const Text(
                       'Register here',

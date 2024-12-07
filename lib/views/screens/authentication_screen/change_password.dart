@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/login_screen_widgets/error_message.dart';
 import 'password_updated.dart';
 
 class ChangePasswordPage extends StatefulWidget {
@@ -14,6 +15,38 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  String? _errorMessage;
+
+  void _validateAndSubmit() {
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (password.isEmpty || confirmPassword.isEmpty) {
+      setState(() {
+        _errorMessage = "Password fields cannot be empty.";
+      });
+      return;
+    }
+
+    if (password != confirmPassword) {
+      setState(() {
+        _errorMessage = "Passwords do not match.";
+      });
+      return;
+    }
+
+    setState(() {
+      _errorMessage = null;
+    });
+
+    // Navigate to the Password Updated Page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const PasswordUpdatedPage(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +82,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               style: TextStyle(color: Colors.white60),
             ),
             const SizedBox(height: 30),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: ErrorMessage(message: _errorMessage!),
+              ),
             TextField(
               controller: _passwordController,
               obscureText: _obscurePassword,
@@ -120,17 +158,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {
-                // Validate password fields here (if needed)
-
-                // Navigate to the Password Updated Page
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PasswordUpdatedPage(),
-                  ),
-                );
-              },
+              onPressed: _validateAndSubmit,
               child: const Center(
                 child: Text(
                   'RESET PASSWORD',
