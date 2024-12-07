@@ -1,3 +1,6 @@
+import 'package:expensy/views/screens/notifications_screen/notifications_screen.dart';
+import 'package:expensy/views/screens/overview_screen/overview.dart';
+import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:flutter/material.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
@@ -27,7 +30,7 @@ class ReminderList extends StatefulWidget {
 }
 
 class _ReminderListState extends State<ReminderList> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 3;
   final List<ReminderItem> reminders = [
     ReminderItem(
       reminderDate: '26 May 2024',
@@ -56,16 +59,27 @@ class _ReminderListState extends State<ReminderList> {
   ];
 
   void _onItemTapped(int index) {
+    if (_selectedIndex == index) return;
+
     setState(() {
       _selectedIndex = index;
     });
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/notifications');
-        break;
+
+    if (index == 0) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const Overview()));
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const Savings()));
+    } else if (index == 2) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+    } else if (index == 3) {
+      // Uncomment and add the Settings screen when available
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ReminderList()),
+      );
     }
   }
 

@@ -1,3 +1,5 @@
+import 'package:expensy/views/screens/overview_screen/add.dart';
+import 'package:expensy/views/widgets/floating_action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
@@ -6,7 +8,6 @@ import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
 import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 import 'package:expensy/views/screens/overview_screen/overview.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
-
 
 class NotificationItem {
   final String title;
@@ -110,95 +111,102 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       );
     } else if (index == 2) {
       // Uncomment and add the Notification screen when available
-       Navigator.pushReplacement(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-       );
+      );
     } else if (index == 3) {
       // Uncomment and add the Settings screen when available
-       Navigator.pushReplacement(
-         context,
-         MaterialPageRoute(builder: (_) => const ReminderList()),
-       );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ReminderList()),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DarkMode.backgroundColor,
-      appBar: CustomizedAppBar(
-        title: 'Notification',
-        showImage: false,
-        titleAlignment: MainAxisAlignment.center,
-      ),
-      body: ListView.builder(
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return Column(
-            children: [
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: notification.iconBgColor,
-                    borderRadius: BorderRadius.circular(12),
+        backgroundColor: DarkMode.backgroundColor,
+        appBar: CustomizedAppBar(
+          title: 'Notification',
+          showImage: false,
+          titleAlignment: MainAxisAlignment.center,
+        ),
+        floatingActionButton: FloatingActionButtonWidget(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Add()),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: CustomBottomNavBar(
+          selectedIndex: _selectedIndex,
+          onItemTapped: _onItemTapped,
+        ),
+        // backgroundColor: DarkMode.backgroundColor,
+        body: ListView.builder(
+          itemCount: notifications.length,
+          itemBuilder: (context, index) {
+            final notification = notifications[index];
+            return Column(
+              children: [
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: notification.iconBgColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      notification.icon,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
-                  child: Icon(
-                    notification.icon,
-                    color: Colors.white,
-                    size: 24,
+                  title: Text(
+                    notification.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                title: Text(
-                  notification.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  subtitle: Text(
+                    notification.message,
+                    style: TextStyle(
+                      color: Colors.grey[400],
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                subtitle: Text(
-                  notification.message,
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 14,
-                  ),
-                ),
-                trailing: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      notification.time,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 12,
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        notification.time,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    const Icon(
-                      Icons.more_horiz,
-                      color: Colors.grey,
-                    ),
-                  ],
+                      const Icon(
+                        Icons.more_horiz,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              if (index < notifications.length - 1)
-                Divider(
-                  color: Colors.grey[800],
-                  height: 1,
-                  indent: 16,
-                  endIndent: 16,
-                ),
-            ],
-          );
-        },
-      ),
-      bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
-    );
+                if (index < notifications.length - 1)
+                  Divider(
+                    color: Colors.grey[800],
+                    height: 1,
+                    indent: 16,
+                    endIndent: 16,
+                  ),
+              ],
+            );
+          },
+        ));
   }
 }

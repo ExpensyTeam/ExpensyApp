@@ -297,9 +297,10 @@ class _SavingsState extends State<Savings> {
 }
  */
 
+import 'package:expensy/views/screens/notifications_screen/notifications_screen.dart';
+import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 import 'package:expensy/views/screens/savings_screen/addGoal.dart';
 import 'package:flutter/material.dart';
-import 'package:expensy/views/screens/overview_screen/add.dart';
 import 'package:expensy/views/screens/overview_screen/overview.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
@@ -311,6 +312,7 @@ import 'goals.dart';
 import 'package:expensy/views/widgets/floating_action_button.dart';
 
 class Savings extends StatefulWidget {
+  const Savings({Key? key}) : super(key: key);
   @override
   State<Savings> createState() => _SavingsState();
 }
@@ -334,8 +336,18 @@ class _SavingsState extends State<Savings> {
 
     if (index == 0) {
       Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => const Overview()));
+    } else if (index == 1) {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => Savings()));
+    } else if (index == 2) {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+    } else if (index == 3) {
+      // Uncomment and add the Settings screen when available
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const Overview()),
+        MaterialPageRoute(builder: (_) => const ReminderList()),
       );
     }
   }
