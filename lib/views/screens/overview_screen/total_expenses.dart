@@ -96,7 +96,7 @@ class _TotalExpensesScreenState extends State<TotalExpensesScreen> {
         //     return SpendsCategoriesList(scrollController: scrollController);
         //   },
         // )
-        SpendsCategoriesList()
+        ExpenseCategoriesList()
       ]),
     ));
   }

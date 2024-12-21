@@ -1,3 +1,9 @@
+import 'package:expensy/bloc/expense%20block/expense_bloc.dart';
+import 'package:expensy/bloc/income%20block/income_bloc.dart';
+import 'package:expensy/bloc/notificaton%20block/notification_bloc.dart';
+import 'package:expensy/bloc/reminder%20block/reminder_bloc.dart';
+import 'package:expensy/bloc/saving%20block/saving_block.dart';
+import 'package:expensy/bloc/transaction%20block/transaction_bloc.dart';
 import 'package:expensy/views/screens/overview_screen/overview.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +11,9 @@ import 'views/screens/onboarding_screen/onboarding_screen.dart';
 import 'views/screens/notifications_screen/notifications_screen.dart';
 import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+// Import your transaction bloc
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -22,18 +30,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/home': (context) => const Overview(),
-        '/saving': (context) => Savings(),
-        '/notifications': (context) => const NotificationsScreen(),
-        '/reminders': (context) => const ReminderList(),
-        // '/profile': (context) => const ProfileScreen(),
-      },
-      title: 'Onboarding & Login',
-      theme: ThemeData.dark(),
-      home: const OnboardingScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => TransactionBloc()),
+        BlocProvider(create: (context) => IncomeBloc()),
+        BlocProvider(create: (context) => ExpenseBloc()),
+        BlocProvider(create: (context) => SavingBloc()),
+        BlocProvider(create: (context) => NotificationBloc()),
+        BlocProvider(create: (context) => ReminderBloc()),
+        // Add other BLoCs here if needed
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/home': (context) => const Overview(),
+          '/saving': (context) => Savings(),
+          '/notifications': (context) => const NotificationsScreen(),
+          '/reminders': (context) => const ReminderList(),
+        },
+        title: 'Onboarding & Login',
+        theme: ThemeData.dark(),
+        home: const OnboardingScreen(),
+      ),
     );
   }
 }

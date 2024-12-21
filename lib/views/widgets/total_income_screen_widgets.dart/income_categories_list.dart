@@ -1,70 +1,93 @@
 import 'package:expensy/Data/iconMapping.dart';
 import 'package:expensy/Data/transactions.dart';
+import 'package:expensy/bloc/income%20block/income_bloc.dart';
+import 'package:expensy/bloc/income%20block/income_event.dart';
+import 'package:expensy/bloc/income%20block/income_state.dart';
 import 'package:expensy/utils/transaction.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/pie_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class IncomeCategoriesList extends StatefulWidget {
+// class IncomeCategoriesList extends StatefulWidget {
+
+class IncomeCategoriesList extends StatelessWidget {
   // final ScrollController scrollController;
 
   // const IncomeCategoriesList({required this.scrollController});
 
   @override
-  _IncomeCategoriesListState createState() => _IncomeCategoriesListState();
-}
-
-class _IncomeCategoriesListState extends State<IncomeCategoriesList> {
-  List<Transaction> incomes = transactions_data
-      .where((transaction) => transaction.amount.startsWith('+'))
-      .toList();
-  final Map<String, IconData> iconMapping = iconMapping_data ?? {};
-
-  bool isSpendViewSelected = true;
-
-  @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          color: DarkMode.neutralColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          ),
-        ),
-        child: SingleChildScrollView(
-          // controller: widget.scrollController,
-          child: Column(
-            children: [
-              SpendCategorySelector(),
-              if (!isSpendViewSelected) TransactionSemiDoughnutChart(),
-              SpendList(),
-            ],
-          ),
-        ));
+    return BlocBuilder<IncomeBloc, IncomeState>(
+      builder: (context, state) {
+        if (state is IncomeInitial) {
+          context.read<IncomeBloc>().add(LoadIncomes());
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is IncomeLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is IncomeLoaded) {
+          return _buildContent(context, state);
+        } else if (state is IncomeError) {
+          return Center(child: Text(state.message));
+        }
+        return const SizedBox();
+      },
+    );
   }
 
-  Widget SpendCategorySelector() {
+  Widget _buildContent(BuildContext context, IncomeLoaded state) {
+    return Container(
+      decoration: BoxDecoration(
+        color: DarkMode.neutralColor,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(30.0),
+          topRight: Radius.circular(30.0),
+        ),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildSpendCategorySelector(context, state.isSpendViewSelected),
+            if (!state.isSpendViewSelected) TransactionSemiDoughnutChart(),
+            _buildSpendList(context, state.incomes),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSpendCategorySelector(
+      BuildContext context, bool isSpendViewSelected) {
     return Padding(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildCategoryButton("Incomes", isSpendViewSelected, () {
-            setState(() => isSpendViewSelected = true);
-          }),
-          _buildCategoryButton("Categories", !isSpendViewSelected, () {
-            setState(() => isSpendViewSelected = false);
-          }),
+          _buildCategoryButton(
+            context,
+            "Incomes",
+            isSpendViewSelected,
+            () => context.read<IncomeBloc>().add(ToggleView(true)),
+          ),
+          _buildCategoryButton(
+            context,
+            "Categories",
+            !isSpendViewSelected,
+            () => context.read<IncomeBloc>().add(ToggleView(false)),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildCategoryButton(
-      String label, bool isSelected, VoidCallback onPressed) {
+    BuildContext context,
+    String label,
+    bool isSelected,
+    VoidCallback onPressed,
+  ) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       width: MediaQuery.of(context).size.width * 0.45,
       decoration: BoxDecoration(
         border: isSelected
@@ -78,10 +101,6 @@ class _IncomeCategoriesListState extends State<IncomeCategoriesList> {
       ),
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Text(
-          label,
-          style: TextStyle(color: Colors.white),
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: DarkMode.neutralColor,
           foregroundColor: isSelected ? DarkMode.primaryColor : Colors.white,
@@ -89,14 +108,20 @@ class _IncomeCategoriesListState extends State<IncomeCategoriesList> {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
+        child: Text(
+          label,
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
 
-  Widget SpendList() {
+  Widget _buildSpendList(BuildContext context, List<Transaction> incomes) {
+    final iconMapping = context.read<IncomeBloc>().iconMapping;
+
     return ListView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: incomes.length,
       itemBuilder: (context, index) {
         final transaction = incomes[index];
@@ -117,18 +142,28 @@ class _IncomeCategoriesListState extends State<IncomeCategoriesList> {
               size: 30,
             ),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          title: Text(transaction.type,
-              style: TextStyle(color: Colors.white, fontSize: 20)),
-          subtitle:
-              Text(transaction.date, style: TextStyle(color: Colors.white70)),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+          title: Text(
+            transaction.type,
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          subtitle: Text(
+            transaction.date,
+            style: const TextStyle(color: Colors.white70),
+          ),
           trailing: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text('${transaction.amount} + VAT ${transaction.vat}',
-                  style: TextStyle(color: Colors.white, fontSize: 18)),
-              Text(transaction.method,
-                  style: TextStyle(color: Colors.white70, fontSize: 15)),
+              Text(
+                '${transaction.amount} + VAT ${transaction.vat}',
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              Text(
+                transaction.method,
+                style: const TextStyle(color: Colors.white70, fontSize: 15),
+              ),
             ],
           ),
         );

@@ -1,11 +1,15 @@
 import 'package:expensy/Data/iconMapping.dart';
 import 'package:expensy/Data/transactions.dart';
+import 'package:expensy/bloc/transaction%20block/transaction_bloc.dart';
+import 'package:expensy/bloc/transaction%20block/transaction_event.dart';
+import 'package:expensy/bloc/transaction%20block/transaction_state.dart';
 import 'package:expensy/utils/transaction.dart';
 import 'package:expensy/views/screens/budget_stats_screen/budget_stats.dart';
 import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class MainOverview extends StatefulWidget {
@@ -18,7 +22,7 @@ class MainOverview extends StatefulWidget {
 }
 
 class _MainOverviewState extends State<MainOverview> {
-  String _selectedButton = "Saving"; // Default selection
+  String _selectedButton = "Saving";
 
   @override
   Widget build(BuildContext context) {
@@ -207,101 +211,124 @@ class BuildProgressBar extends StatelessWidget {
   }
 }
 
-class MainOverviewList extends StatefulWidget {
+class MainOverviewList extends StatelessWidget {
   final ScrollController scrollController;
 
-  const MainOverviewList({required this.scrollController});
+  const MainOverviewList({
+    super.key,
+    required this.scrollController,
+  });
 
-  @override
-  _MainOverviewListState createState() => _MainOverviewListState();
-}
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            "Latest Entries",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          ElevatedButton(
+            onPressed: () => print("this is three point button"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: DarkMode.neutralColor,
+              fixedSize: const Size(10, 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(
+                  color: Colors.grey,
+                  width: 0.7,
+                ),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+            child: const Icon(
+              Icons.more_horiz,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-class _MainOverviewListState extends State<MainOverviewList> {
-  List<Transaction> transactions = transactions_data;
+  Widget _buildTransactionTile(
+      Transaction transaction, Map<String, IconData> iconMapping) {
+    final icon = iconMapping[transaction.type] ?? Icons.attach_money_rounded;
 
-  final Map<String, IconData> iconMapping = iconMapping_data;
+    return ListTile(
+      leading: Container(
+        width: 45,
+        height: 45,
+        decoration: BoxDecoration(
+          color: DarkMode.iconBackground,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      title: Text(
+        transaction.type,
+        style: const TextStyle(color: Colors.white, fontSize: 20),
+      ),
+      subtitle: Text(
+        transaction.date,
+        style: const TextStyle(color: Colors.white70),
+      ),
+      trailing: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            '${transaction.amount} + VAT ${transaction.vat}',
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          Text(
+            transaction.method,
+            style: const TextStyle(color: Colors.white70, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 14),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        if (state is TransactionInitial) {
+          context.read<TransactionBloc>().add(LoadTransactions());
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is TransactionLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is TransactionLoaded) {
+          return Column(
             children: [
-              Text(
-                "Latest Entries",
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-              ElevatedButton(
-                onPressed: () => print("this is three point button"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DarkMode.neutralColor,
-                  fixedSize: const Size(10, 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(
-                      color: Colors.grey,
-                      width: 0.7,
-                    ),
+              const SizedBox(height: 14),
+              _buildHeader(),
+              const SizedBox(height: 15),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: state.transactions.length,
+                  itemBuilder: (context, index) => _buildTransactionTile(
+                    state.transactions[index],
+                    context.read<TransactionBloc>().iconMapping,
                   ),
-                  padding: EdgeInsets.zero,
-                ),
-                child: const Icon(
-                  Icons.more_horiz,
-                  color: Colors.white,
                 ),
               ),
             ],
-          ),
-        ),
-        SizedBox(height: 15),
-        Expanded(
-          child: ListView.builder(
-            controller:
-                widget.scrollController, // Use the passed scrollController
-            itemCount: transactions.length,
-            itemBuilder: (context, index) {
-              final transaction = transactions[index];
-              final icon =
-                  iconMapping[transaction.type] ?? Icons.attach_money_rounded;
-
-              return ListTile(
-                leading: Container(
-                  width: 45,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: DarkMode.iconBackground,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                title: Text(transaction.type,
-                    style: TextStyle(color: Colors.white, fontSize: 20)),
-                subtitle: Text(transaction.date,
-                    style: TextStyle(color: Colors.white70)),
-                trailing: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('${transaction.amount} + VAT ${transaction.vat}',
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
-                    Text(transaction.method,
-                        style: TextStyle(color: Colors.white70, fontSize: 15)),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+          );
+        } else if (state is TransactionError) {
+          return Center(child: Text(state.message));
+        }
+        return const SizedBox();
+      },
     );
   }
 }
