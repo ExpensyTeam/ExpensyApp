@@ -62,7 +62,8 @@ class PasswordUpdatedPage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pop(context); // Return to the login page
+                  Navigator.pop(context); // Go back one screen
+                  Navigator.pop(context); // Go back another screen
                 },
                 child: const Center(
                   child: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -14,49 +15,126 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
   String? errorMessage;
 
-  void _validateAndRegister() {
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _validateAndRegister() async {
+    if (_isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+      errorMessage = null;
+    });
+
     final username = _usernameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+    try {
+      // Basic validation
+      if (username.isEmpty || email.isEmpty || password.isEmpty) {
+        setState(() {
+          errorMessage = "All fields are required.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
+        setState(() {
+          errorMessage = "Please enter a valid email address.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      if (password.length < 6) {
+        setState(() {
+          errorMessage = "Password must be at least 6 characters long.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      if (password != confirmPassword) {
+        setState(() {
+          errorMessage = "Passwords do not match.";
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Sign up with Supabase
+      final AuthResponse response = await Supabase.instance.client.auth.signUp(
+          email: email,
+          password: password,
+          data: {'username': username} // Store username in user metadata
+          );
+
+      if (response.user != null) {
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Registration successful! Please verify your email."),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context); // Go back to LoginPage
+      } else {
+        setState(() {
+          errorMessage = "Registration failed. Please try again.";
+        });
+      }
+    } catch (e) {
       setState(() {
-        errorMessage = "All fields are required.";
+        if (e is AuthException) {
+          errorMessage = e.message;
+        } else {
+          errorMessage = "An unexpected error occurred. Please try again.";
+        }
       });
-      return;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
 
-    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
-      setState(() {
-        errorMessage = "Please enter a valid email address.";
-      });
-      return;
-    }
-
-    if (password != confirmPassword) {
-      setState(() {
-        errorMessage = "Passwords do not match.";
-      });
-      return;
-    }
-
-    setState(() {
-      errorMessage = null;
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Registration Successful for $username!"),
-        backgroundColor: Colors.green,
+  InputDecoration _getInputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.white70),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.white24),
       ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.blueAccent),
+      ),
+      errorBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.redAccent),
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.redAccent),
+      ),
+      filled: true,
+      fillColor: Colors.white.withOpacity(0.05),
     );
-
-    Navigator.pop(context); // Return to LoginPage
   }
 
   @override
@@ -110,55 +188,21 @@ class _SignUpPageState extends State<SignUpPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person, color: Colors.white70),
-                  labelText: 'Username',
-                  labelStyle: const TextStyle(color: Colors.white70),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white24),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                decoration: _getInputDecoration('Username'),
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.email, color: Colors.white70),
-                  labelText: 'Email',
-                  labelStyle: const TextStyle(color: Colors.white70),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white24),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                decoration: _getInputDecoration('Email'),
                 style: const TextStyle(color: Colors.white),
+                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock, color: Colors.white70),
-                  labelText: 'Password',
-                  labelStyle: const TextStyle(color: Colors.white70),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white24),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                decoration: _getInputDecoration('Password').copyWith(
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -179,18 +223,7 @@ class _SignUpPageState extends State<SignUpPage> {
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: _obscureConfirmPassword,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.lock, color: Colors.white70),
-                  labelText: 'Confirm Password',
-                  labelStyle: const TextStyle(color: Colors.white70),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.white24),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                decoration: _getInputDecoration('Confirm Password').copyWith(
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureConfirmPassword
@@ -208,30 +241,47 @@ class _SignUpPageState extends State<SignUpPage> {
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF1565C0),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _validateAndRegister,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.blueAccent.withOpacity(0.6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                onPressed: _validateAndRegister,
-                child: const Center(
-                  child: Text(
-                    'SIGN UP',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'SIGN UP',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: () {
-                  Navigator.pop(context); // Return to LoginPage
-                },
+                onTap: () => Navigator.pop(context),
                 child: const Text(
-                  'Already have an account? Login here',
-                  style: TextStyle(color: Colors.blueAccent),
+                  'Already have an account ? Login here',
+                  style: TextStyle(
+                    color: Colors.blueAccent,
+                    fontSize: 14,
+                  ),
                 ),
               ),
               const SizedBox(height: 50),

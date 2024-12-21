@@ -4,8 +4,16 @@ import 'package:flutter/material.dart';
 import 'views/screens/onboarding_screen/onboarding_screen.dart';
 import 'views/screens/notifications_screen/notifications_screen.dart';
 import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://warkuczspselbodswknb.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indhcmt1Y3pzcHNlbGJvZHN3a25iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ2MjEwNDgsImV4cCI6MjA1MDE5NzA0OH0.8GcEKSxc_X5ZO2erDj0ivGiWmwqcRt8hNrCgyk6HBaw',
+  );
   runApp(const MyApp());
 }
 

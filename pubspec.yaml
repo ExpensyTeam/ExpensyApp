@@ -13,6 +13,8 @@ dependencies:
   syncfusion_flutter_charts: ^20.4.49
   intl: ^0.18.0
   flutter_svg: ^2.0.0 # Added dependency for SVG support
+  supabase_flutter: ^2.8.2
+  google_sign_in: ^6.2.2
 
 dev_dependencies:
   flutter_test:
