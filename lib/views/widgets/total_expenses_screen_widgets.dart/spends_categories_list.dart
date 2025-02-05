@@ -146,8 +146,12 @@ import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/pie_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class ExpenseCategoriesList extends StatelessWidget {
+  final DateTime selectedDate;
+  const ExpenseCategoriesList({super.key, required this.selectedDate});
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ExpenseBloc, ExpenseState>(
@@ -158,7 +162,9 @@ class ExpenseCategoriesList extends StatelessWidget {
         } else if (state is ExpenseLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ExpenseLoaded) {
-          return _buildContent(context, state);
+          final filteredExpenses = _filterTransactions(state.expenses);
+
+          return _buildContent(context, state, filteredExpenses);
         } else if (state is ExpenseError) {
           return Center(child: Text(state.message));
         }
@@ -167,7 +173,16 @@ class ExpenseCategoriesList extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, ExpenseLoaded state) {
+  List<Transaction> _filterTransactions(List<Transaction> expenses) {
+    return expenses.where((transaction) {
+      final transactionDate = DateFormat('d MMMM yyyy').parse(transaction.date);
+      return transactionDate
+          .isBefore(selectedDate.add(const Duration(days: 1)));
+    }).toList();
+  }
+
+  Widget _buildContent(BuildContext context, ExpenseLoaded state,
+      List<Transaction> filteredExpenses) {
     return Container(
       decoration: BoxDecoration(
         color: DarkMode.neutralColor,
@@ -180,8 +195,9 @@ class ExpenseCategoriesList extends StatelessWidget {
         child: Column(
           children: [
             _buildCategorySelector(context, state.isSpendViewSelected),
-            if (!state.isSpendViewSelected) TransactionSemiDoughnutChart(),
-            _buildExpenseList(context, state.expenses),
+            if (state.isSpendViewSelected)
+              TransactionSemiDoughnutChart(transactions: filteredExpenses),
+            _buildExpenseList(context, filteredExpenses),
           ],
         ),
       ),
@@ -197,15 +213,15 @@ class ExpenseCategoriesList extends StatelessWidget {
         children: [
           _buildCategoryButton(
             context,
-            "Spends",
-            isSpendViewSelected,
-            () => context.read<ExpenseBloc>().add(ToggleView(true)),
-          ),
-          _buildCategoryButton(
-            context,
             "Categories",
             !isSpendViewSelected,
             () => context.read<ExpenseBloc>().add(ToggleView(false)),
+          ),
+          _buildCategoryButton(
+            context,
+            "Spends",
+            isSpendViewSelected,
+            () => context.read<ExpenseBloc>().add(ToggleView(true)),
           ),
         ],
       ),

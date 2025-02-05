@@ -1,5 +1,7 @@
 import 'package:expensy/Data/iconMapping.dart';
 import 'package:expensy/Data/transactions.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_bloc.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_event.dart';
 import 'package:expensy/bloc/transaction%20block/transaction_bloc.dart';
 import 'package:expensy/bloc/transaction%20block/transaction_event.dart';
 import 'package:expensy/bloc/transaction%20block/transaction_state.dart';
@@ -77,24 +79,25 @@ class BuildTextButtons extends StatelessWidget {
         children: [
           SizedBox(
             width: width,
-            child: _buildButtonText("Saving", Icons.add, Savings()),
+            child: _buildButtonText("Saving", Icons.add, Savings(), 1),
           ),
           SizedBox(
             width: width,
             child: _buildButtonText(
-                "Reminder", Icons.notifications_none, ReminderList()),
+                "Reminder", Icons.notifications_none, ReminderList(), 3),
           ),
           SizedBox(
             width: width,
-            child: _buildButtonText(
-                "Budget", Icons.account_balance_wallet_outlined, BudgetStats()),
+            child: _buildButtonText("Budget",
+                Icons.account_balance_wallet_outlined, BudgetStats(), 0),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildButtonText(String label, IconData icon, Widget targetScreen) {
+  Widget _buildButtonText(
+      String label, IconData icon, Widget targetScreen, index) {
     final bool isSelected = label == selectedButton;
 
     return Container(
@@ -115,7 +118,7 @@ class BuildTextButtons extends StatelessWidget {
           return ElevatedButton(
             onPressed: () {
               onButtonPressed(label); // Update the state
-
+              context.read<BottomNavBloc>().add(ChangeBottomNavIndex(index));
               // Now we have access to context here
               Navigator.push(
                 context,

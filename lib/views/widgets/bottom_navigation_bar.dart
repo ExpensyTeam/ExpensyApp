@@ -1,7 +1,7 @@
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
 
-class CustomBottomNavBar extends StatelessWidget {
+class CustomBottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
@@ -11,6 +11,11 @@ class CustomBottomNavBar extends StatelessWidget {
     required this.onItemTapped,
   }) : super(key: key);
 
+  @override
+  State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
+}
+
+class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -32,35 +37,43 @@ class CustomBottomNavBar extends StatelessWidget {
             IconButton(
               icon: Icon(
                 Icons.home_filled,
-                color: selectedIndex == 0 ? DarkMode.buttonColor : Colors.grey,
+                color: widget.selectedIndex == 0
+                    ? DarkMode.buttonColor
+                    : Colors.grey,
                 size: 30,
               ),
-              onPressed: () => onItemTapped(0),
+              onPressed: () => widget.onItemTapped(0),
             ),
             IconButton(
               icon: Icon(
                 Icons.domain_verification,
-                color: selectedIndex == 1 ? DarkMode.buttonColor : Colors.grey,
+                color: widget.selectedIndex == 1
+                    ? DarkMode.buttonColor
+                    : Colors.grey,
                 size: 30,
               ),
-              onPressed: () => onItemTapped(1),
+              onPressed: () => widget.onItemTapped(1),
             ),
             const SizedBox(width: 40),
             IconButton(
               icon: Icon(
                 Icons.notifications,
-                color: selectedIndex == 2 ? DarkMode.buttonColor : Colors.grey,
+                color: widget.selectedIndex == 2
+                    ? DarkMode.buttonColor
+                    : Colors.grey,
                 size: 30,
               ),
-              onPressed: () => onItemTapped(2),
+              onPressed: () => widget.onItemTapped(2),
             ),
             IconButton(
               icon: Icon(
                 Icons.settings_rounded,
-                color: selectedIndex == 3 ? DarkMode.buttonColor : Colors.grey,
+                color: widget.selectedIndex == 3
+                    ? DarkMode.buttonColor
+                    : Colors.grey,
                 size: 30,
               ),
-              onPressed: () => onItemTapped(3),
+              onPressed: () => widget.onItemTapped(3),
             ),
           ],
         ),

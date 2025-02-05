@@ -1,3 +1,4 @@
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_bloc.dart';
 import 'package:expensy/bloc/expense%20block/expense_bloc.dart';
 import 'package:expensy/bloc/income%20block/income_bloc.dart';
 import 'package:expensy/bloc/notificaton%20block/notification_bloc.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => SavingBloc()),
         BlocProvider(create: (context) => NotificationBloc()),
         BlocProvider(create: (context) => ReminderBloc()),
-        // Add other BLoCs here if needed
+        BlocProvider(create: (context) => BottomNavBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

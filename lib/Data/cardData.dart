@@ -17,11 +17,6 @@ final List<CardData> cardDataList_data = [
     amount: "\$112.23",
     icon: Icons.account_balance_wallet_outlined,
   ),
-  CardData(
-    name: "Investments",
-    amount: "\$1,000.00",
-    icon: Icons.account_balance_wallet_outlined,
-  ),
 ];
 
 final List<CardData> addCardDataList_data = [

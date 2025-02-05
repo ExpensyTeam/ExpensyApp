@@ -25,6 +25,58 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  // Future<void> _handleLogin() async {
+  //   if (_isLoading) return;
+
+  //   setState(() {
+  //     _isLoading = true;
+  //     errorMessage = null;
+  //   });
+
+  //   final email = _emailController.text.trim();
+  //   final password = _passwordController.text.trim();
+
+  //   try {
+  //     if (email.isEmpty || password.isEmpty) {
+  //       throw const AuthException('Please fill in all fields');
+  //     }
+
+  //     final response = await Supabase.instance.client.auth.signInWithPassword(
+  //       email: email,
+  //       password: password,
+  //     );
+
+  //     if (response.session != null) {
+  //       // Retrieve the JWT token from the session
+  //       final String jwtToken = response.session!.accessToken;
+
+  //       // Print or use the JWT token as needed
+  //       print('JWT Token: $jwtToken');
+
+  //       if (!mounted) return;
+  //       Navigator.of(context).pushReplacementNamed('/home');
+  //     } else {
+  //       setState(() {
+  //         errorMessage = "Login failed. Please try again.";
+  //       });
+  //     }
+  //   } on AuthException catch (e) {
+  //     setState(() {
+  //       errorMessage = e.message;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       errorMessage = "An unexpected error occurred. Please try again.";
+  //     });
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   }
+  // }
+
   Future<void> _handleLogin() async {
     if (_isLoading) return;
 
@@ -47,6 +99,9 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.user != null) {
+        final String userId = response.user!.id;
+        print('User ID: $userId'); // Print or use the UID as needed
+
         if (!mounted) return;
         Navigator.of(context).pushReplacementNamed('/home');
       } else {

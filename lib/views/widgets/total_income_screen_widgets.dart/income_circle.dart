@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expensy/views/themes/colors.dart';
+import 'package:expensy/Data/transactions.dart'; // Assuming transactions_data is imported here
 import 'package:intl/intl.dart';
 
 class IncomeCircleWidget extends StatelessWidget {
@@ -7,22 +8,35 @@ class IncomeCircleWidget extends StatelessWidget {
 
   const IncomeCircleWidget({super.key, required this.selectedDate});
 
-  double _getTotalIncome(DateTime date) {
-    // Filter the transactions based on the selected date
-
-    return 800.0;
+  // Helper function to parse the date from the string format to DateTime
+  DateTime _parseDate(String dateString) {
+    final DateFormat formatter = DateFormat('d MMMM yyyy'); // Your date format
+    return formatter.parse(dateString);
   }
 
-  double _getBudget() {
-    // You can replace this with logic to get the user's total budget
-    return 3000.0; // Example: $3000 total budget
+  double _getTotalIncome(DateTime date) {
+    // Filter the transactions based on the selected date
+    final totalIncome = transactions_data.where((transaction) {
+      // Only consider income transactions (amount starts with '+')
+      final transactionDate = _parseDate(transaction.date);
+      return transaction.amount.startsWith('+') &&
+          transactionDate.isBefore(date.add(const Duration(days: 1)));
+    }).fold<double>(
+      0.0,
+      (sum, transaction) {
+        // Remove the '$' sign and parse the amount as a double
+        final amount = double.parse(transaction.amount.substring(2));
+        return sum + amount;
+      },
+    );
+
+    return totalIncome;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Fetch the total Income and calculate the percentage
+    // Fetch the total income and calculate the percentage
     double totalIncome = _getTotalIncome(selectedDate);
-    double budget = _getBudget();
 
     return Column(
       children: [
@@ -49,21 +63,17 @@ class IncomeCircleWidget extends StatelessWidget {
                       color: const Color.fromRGBO(82, 92, 101, 1), width: 10),
                   color: DarkMode.buttonColor),
             ),
-            // Center content (display the total Income)
+            // Center content (display the total income)
             Center(
               child: Text(
-                "\$$totalIncome",
+                "\$${totalIncome.toStringAsFixed(2)}", // Display income with two decimal places
                 style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ),
           ],
         ),
-        SizedBox(
-          height: 15,
-        ),
-        SizedBox(
-          height: 10,
-        )
+        SizedBox(height: 15),
+        SizedBox(height: 10),
       ],
     );
   }

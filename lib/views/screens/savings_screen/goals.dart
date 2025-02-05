@@ -1,3 +1,4 @@
+import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:flutter/material.dart';
 import 'package:expensy/views/screens/overview_screen/add.dart';
 import 'package:expensy/views/themes/colors.dart';
@@ -30,12 +31,12 @@ class GoalsScreen extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: 0,
+        selectedIndex: 1,
         onItemTapped: (int index) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => Overview(),
+              builder: (context) => Savings(),
             ),
           );
         },

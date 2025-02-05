@@ -1,9 +1,9 @@
-// import 'package:expensy/Data/transactions.dart';
-// import 'package:flutter/material.dart';
-// import 'package:syncfusion_flutter_charts/charts.dart';
-// import 'package:expensy/utils/PieData.dart';
-// import 'package:expensy/utils/transaction.dart';
-// import 'package:expensy/views/themes/colors.dart';
+import 'package:expensy/Data/transactions.dart';
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:expensy/utils/PieData.dart';
+import 'package:expensy/utils/transaction.dart';
+import 'package:expensy/views/themes/colors.dart';
 
 /* this is Pie chart */
 
@@ -104,19 +104,20 @@
 import 'package:expensy/Data/transactions.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:expensy/utils/PieData.dart';
-import 'package:expensy/utils/transaction.dart';
-import 'package:expensy/views/themes/colors.dart';
+import 'package:expensy/utils/transaction.dart'; // Your Transaction class
+import 'package:expensy/utils/PieData.dart'; // Your PieData class
+import 'package:expensy/views/themes/colors.dart'; // For color constants
 
 class TransactionSemiDoughnutChart extends StatelessWidget {
   final List<Transaction> transactions;
 
-  TransactionSemiDoughnutChart({Key? key})
-      : transactions = transactions_data,
-        super(key: key);
+  // Constructor now accepts the filtered transactions list
+  TransactionSemiDoughnutChart({Key? key, required this.transactions})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Calculate category data from the filtered transactions
     List<PieData> pieData = calculateCategoryData(transactions);
 
     return Container(
@@ -129,7 +130,7 @@ class TransactionSemiDoughnutChart extends StatelessWidget {
         child: Column(
           children: [
             SfCircularChart(
-              // backgroundColor: Colors.red,
+              // Background and chart options
               centerY: '150',
               margin: EdgeInsets.zero,
               legend: Legend(
@@ -168,10 +169,14 @@ class TransactionSemiDoughnutChart extends StatelessWidget {
   List<PieData> calculateCategoryData(List<Transaction> transactionsData) {
     Map<String, double> categoryTotals = {};
 
+    // Calculate total amounts per category
     for (var transaction in transactionsData) {
+      // Parse amount and convert it to double
       double amount = double.tryParse(
-              transaction.amount.replaceAll(RegExp(r'[^0-9.]'), '')) ??
+              transaction.amount.replaceAll(RegExp(r'[^0-9.-]'), '')) ??
           0;
+
+      // Add amount to the corresponding category (positive or negative)
       categoryTotals.update(
         transaction.type,
         (value) => value + amount,
@@ -179,9 +184,11 @@ class TransactionSemiDoughnutChart extends StatelessWidget {
       );
     }
 
+    // Calculate total sum of all categories
     double totalAmount =
         categoryTotals.values.fold(0.0, (sum, amount) => sum + amount);
 
+    // Prepare PieData list with percentages
     List<PieData> pieData = categoryTotals.entries.map((entry) {
       String type = entry.key;
       double totalAmountInCategory = entry.value;
@@ -198,6 +205,7 @@ class TransactionSemiDoughnutChart extends StatelessWidget {
     return pieData;
   }
 
+  // Color selection based on category type
   Color _getColor(String type) {
     switch (type) {
       case 'Food':

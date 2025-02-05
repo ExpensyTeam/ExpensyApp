@@ -59,4 +59,18 @@ List<NotificationItem> notifications_data = [
     icon: Icons.local_movies,
     iconBgColor: DarkMode.iconBackground,
   ),
+  NotificationItem(
+    title: 'Food',
+    message: 'You just paid your food bill',
+    time: 'Just now',
+    icon: Icons.fastfood,
+    iconBgColor: DarkMode.iconBackground,
+  ),
+  NotificationItem(
+    title: 'Food',
+    message: 'You just paid your food bill',
+    time: 'Just now',
+    icon: Icons.fastfood,
+    iconBgColor: DarkMode.iconBackground,
+  ),
 ];

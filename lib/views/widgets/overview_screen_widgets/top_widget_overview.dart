@@ -1,11 +1,12 @@
 import 'package:expensy/Data/cardData.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_bloc.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_event.dart';
 import 'package:expensy/utils/top_view_card.dart';
-import 'package:expensy/views/screens/overview_screen/investement.dart';
 import 'package:expensy/views/screens/overview_screen/total_expenses.dart';
 import 'package:expensy/views/screens/overview_screen/total_income.dart';
-import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Main Overview Screen
 class TopOverview extends StatefulWidget {
@@ -32,17 +33,12 @@ class _TopOverviewState extends State<TopOverview> {
         );
         break;
       case "Total Saving":
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Savings()),
-        );
+        context.read<BottomNavBloc>().add(ChangeBottomNavIndex(1));
+
+        Navigator.pushNamed(context, '/saving');
+
         break;
-      case "Investments":
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Investments()),
-        );
-        break;
+
       default:
         print("Unknown card selected");
     }

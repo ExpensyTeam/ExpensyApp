@@ -1,181 +1,6 @@
-// import 'package:expensy/Data/goals_data.dart';
-// import 'package:expensy/views/screens/notifications_screen/notifications_screen.dart';
-// import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
-// import 'package:expensy/views/screens/savings_screen/addGoal.dart';
-// import 'package:flutter/material.dart';
-// import 'package:expensy/views/screens/overview_screen/overview.dart';
-// import 'package:expensy/views/themes/colors.dart';
-// import 'package:expensy/views/widgets/app_bar.dart';
-// import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
-// import 'package:expensy/views/widgets/floating_action_button.dart';
-// import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/spend_circle.dart';
-// import 'package:intl/intl.dart';
-// import 'goals.dart';
-
-// class Savings extends StatefulWidget {
-//   const Savings({Key? key}) : super(key: key);
-//   @override
-//   State<Savings> createState() => _SavingsState();
-// }
-
-// class _SavingsState extends State<Savings> {
-//   int _selectedIndex = 1;
-//   List<Map<String, dynamic>> goals = goals_data;
-
-//   void _onItemTapped(int index) {
-//     if (_selectedIndex == index) return;
-
-//     setState(() {
-//       _selectedIndex = index;
-//     });
-
-//     if (index == 0) {
-//       Navigator.pushReplacement(
-//           context, MaterialPageRoute(builder: (_) => const Overview()));
-//     } else if (index == 1) {
-//       Navigator.pushReplacement(
-//           context, MaterialPageRoute(builder: (_) => Savings()));
-//     } else if (index == 2) {
-//       Navigator.pushReplacement(context,
-//           MaterialPageRoute(builder: (_) => const NotificationsScreen()));
-//     } else if (index == 3) {
-//       // Uncomment and add the Settings screen when available
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(builder: (_) => const ReminderList()),
-//       );
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     DateTime now = DateTime.now();
-
-//     return Scaffold(
-//       appBar: CustomizedAppBar(
-//         title: "Savings",
-//         titleAlignment: MainAxisAlignment.center,
-//         showImage: false,
-//         showBackButton: true,
-//         backgroundColor: DarkMode.neutralColor,
-//       ),
-//       floatingActionButton: FloatingActionButtonWidget(
-//         onPressed: () => {
-//           Navigator.push(
-//             context,
-//             MaterialPageRoute(builder: (context) => AddGoalPage()),
-//           )
-//         },
-//       ),
-//       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-//       bottomNavigationBar: CustomBottomNavBar(
-//         selectedIndex: _selectedIndex,
-//         onItemTapped: _onItemTapped,
-//       ),
-//       backgroundColor: DarkMode.primaryColor,
-//       body: Column(
-//         children: [
-//           const SizedBox(height: 20),
-//           SpendCircleWidget(selectedDate: now),
-//           const SizedBox(height: 30),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//             child: Container(
-//               padding: const EdgeInsets.all(16),
-//               decoration: BoxDecoration(
-//                 color: DarkMode.neutralColor,
-//                 borderRadius: BorderRadius.circular(12),
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Row(
-//                     children: [
-//                       const Icon(Icons.calendar_month, color: Colors.white),
-//                       const SizedBox(width: 8),
-//                       Text(
-//                         "${DateFormat.yMMMM().format(now)}",
-//                         style: const TextStyle(color: Colors.white),
-//                       ),
-//                     ],
-//                   ),
-//                   const SizedBox(height: 12),
-//                   const Text(
-//                     "Goal for this Month",
-//                     style: TextStyle(color: Colors.white70),
-//                   ),
-//                   const SizedBox(height: 12),
-//                   Stack(
-//                     children: [
-//                       Container(
-//                         height: 30,
-//                         decoration: BoxDecoration(
-//                           borderRadius: BorderRadius.circular(13),
-//                           color: Colors.grey.shade800,
-//                         ),
-//                       ),
-//                       FractionallySizedBox(
-//                         widthFactor: 200 / 500,
-//                         child: Container(
-//                           height: 30,
-//                           decoration: BoxDecoration(
-//                             borderRadius: BorderRadius.circular(13),
-//                             color: DarkMode.buttonColor,
-//                           ),
-//                         ),
-//                       ),
-//                       Positioned.fill(
-//                         child: Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Padding(
-//                               padding:
-//                                   const EdgeInsets.symmetric(horizontal: 8.0),
-//                               child: Text(
-//                                 "\$200",
-//                                 style: const TextStyle(
-//                                   color: Colors.white,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ),
-//                             Padding(
-//                               padding:
-//                                   const EdgeInsets.symmetric(horizontal: 8.0),
-//                               child: Text(
-//                                 "\$500",
-//                                 style: const TextStyle(
-//                                   color: Colors.white70,
-//                                   fontWeight: FontWeight.bold,
-//                                 ),
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//           const SizedBox(height: 20),
-//           Expanded(
-//             child: DraggableScrollableSheet(
-//               initialChildSize: 0.80,
-//               minChildSize: 0.80,
-//               maxChildSize: 1.0,
-//               builder: (context, scrollController) {
-//                 // return Goals(scrollController: scrollController, goals: goals);
-//                 return Goals(scrollController: scrollController, goals: goals);
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_bloc.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_event.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_state.dart';
 import 'package:expensy/bloc/saving%20block/saving_block.dart';
 import 'package:expensy/bloc/saving%20block/saving_event.dart';
 import 'package:expensy/bloc/saving%20block/saving_state.dart';
@@ -183,9 +8,6 @@ import 'package:expensy/views/screens/savings_screen/goals.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:expensy/views/screens/overview_screen/overview.dart';
-import 'package:expensy/views/screens/notifications_screen/notifications_screen.dart';
-import 'package:expensy/views/screens/reminder_screen/reminder_screen.dart';
 import 'package:expensy/views/screens/savings_screen/addGoal.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
@@ -201,132 +23,137 @@ class Savings extends StatefulWidget {
 }
 
 class _SavingsState extends State<Savings> {
-  int _selectedIndex = 1;
+  void _navigateToScreen(BuildContext context, int index) {
+    if (index != context.read<BottomNavBloc>().state.selectedIndex) {
+      context.read<BottomNavBloc>().add(ChangeBottomNavIndex(index));
+      switch (index) {
+        case 0:
+          Navigator.pushNamed(context, '/home');
+          break;
+        case 1:
+          Navigator.pushNamed(context, '/saving');
+          break;
+        case 2:
+          Navigator.pushNamed(context, '/notifications');
+          break;
+        case 3:
+          Navigator.pushNamed(context, '/reminders');
+          break;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
 
-    return BlocProvider(
-      create: (_) =>
-          SavingBloc()..add(LoadGoals()), // Initialize the Bloc and load goals
-      child: Scaffold(
-        appBar: CustomizedAppBar(
-          title: "Savings",
-          titleAlignment: MainAxisAlignment.center,
-          showImage: false,
-          showBackButton: true,
-          backgroundColor: DarkMode.neutralColor,
-        ),
-        floatingActionButton: FloatingActionButtonWidget(
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddGoalPage()),
-            )
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: CustomBottomNavBar(
-          selectedIndex: _selectedIndex,
-          onItemTapped: _onItemTapped,
-        ),
-        backgroundColor: DarkMode.primaryColor,
-        body: BlocBuilder<SavingBloc, SavingState>(
-          builder: (context, state) {
-            if (state is SavingLoading) {
-              return Center(child: CircularProgressIndicator());
-            }
+    return WillPopScope(
+        onWillPop: () async {
+          context.read<BottomNavBloc>().add(PopNavigationStack());
+          return true;
+        },
+        child: BlocProvider(
+          create: (_) => SavingBloc()..add(LoadGoals()),
+          child: Scaffold(
+            appBar: CustomizedAppBar(
+              title: "Savings",
+              titleAlignment: MainAxisAlignment.center,
+              showImage: false,
+              showBackButton: true,
+              backgroundColor: DarkMode.neutralColor,
+            ),
+            floatingActionButton: FloatingActionButtonWidget(
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddGoalPage()),
+                )
+              },
+            ),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerDocked,
+            bottomNavigationBar: BlocBuilder<BottomNavBloc, BottomNavState>(
+              builder: (context, state) {
+                return CustomBottomNavBar(
+                  selectedIndex: state.selectedIndex,
+                  onItemTapped: (index) {
+                    _navigateToScreen(context, index);
+                  },
+                );
+              },
+            ),
+            backgroundColor: DarkMode.primaryColor,
+            body: BlocBuilder<SavingBloc, SavingState>(
+              builder: (context, state) {
+                if (state is SavingLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
-            if (state is SavingError) {
-              return Center(child: Text(state.message));
-            }
+                if (state is SavingError) {
+                  return Center(child: Text(state.message));
+                }
 
-            if (state is SavingLoaded) {
-              return Column(
-                children: [
-                  const SizedBox(height: 20),
-                  SpendCircleWidget(selectedDate: now),
-                  const SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: DarkMode.neutralColor,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                if (state is SavingLoaded) {
+                  return Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      SpendCircleWidget(selectedDate: now),
+                      const SizedBox(height: 30),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: DarkMode.neutralColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.calendar_month,
-                                  color: Colors.white),
-                              const SizedBox(width: 8),
-                              Text(
-                                "${DateFormat.yMMMM().format(now)}",
-                                style: const TextStyle(color: Colors.white),
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_month,
+                                      color: Colors.white),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    "${DateFormat.yMMMM().format(now)}",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
                               ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                "Goal for this Month",
+                                style: TextStyle(color: Colors.white70),
+                              ),
+                              const SizedBox(height: 12),
+                              // Add a progress bar here based on the goal progress
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            "Goal for this Month",
-                            style: TextStyle(color: Colors.white70),
-                          ),
-                          const SizedBox(height: 12),
-                          // Add a progress bar here based on the goal progress
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: DraggableScrollableSheet(
-                      initialChildSize: 0.80,
-                      minChildSize: 0.80,
-                      maxChildSize: 1.0,
-                      builder: (context, scrollController) {
-                        return Goals(
-                            scrollController: scrollController,
-                            goals: state.goals);
-                      },
-                    ),
-                  ),
-                ],
-              );
-            }
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: DraggableScrollableSheet(
+                          initialChildSize: 0.80,
+                          minChildSize: 0.80,
+                          maxChildSize: 1.0,
+                          builder: (context, scrollController) {
+                            return Goals(
+                                scrollController: scrollController,
+                                goals: state.goals);
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }
 
-            return Center(child: Text("No Data Available"));
-          },
-        ),
-      ),
-    );
-  }
-
-  void _onItemTapped(int index) {
-    if (_selectedIndex == index) return;
-
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    if (index == 0) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const Overview()));
-    } else if (index == 1) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const Savings()));
-    } else if (index == 2) {
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (_) => const NotificationsScreen()));
-    } else if (index == 3) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const ReminderList()),
-      );
-    }
+                return Center(child: Text("No Data Available"));
+              },
+            ),
+          ),
+        ));
   }
 }
 
@@ -364,6 +191,8 @@ class Goals extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
+                  context.read<BottomNavBloc>().add(ChangeBottomNavIndex(1));
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(

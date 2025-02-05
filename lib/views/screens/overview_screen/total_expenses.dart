@@ -1,6 +1,7 @@
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_bloc.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_event.dart';
+import 'package:expensy/bloc/bottom_nav%20bloc/bottom_nav_state.dart';
 import 'package:expensy/views/screens/overview_screen/add.dart';
-import 'package:expensy/views/screens/overview_screen/overview.dart';
-import 'package:expensy/views/screens/savings_screen/savings.dart';
 import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
 import 'package:expensy/views/widgets/bottom_navigation_bar.dart';
@@ -9,6 +10,7 @@ import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/calende
 import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/spend_circle.dart';
 import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/spends_categories_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart'; // Import intl package for date formatting
 
 class TotalExpensesScreen extends StatefulWidget {
@@ -19,7 +21,6 @@ class TotalExpensesScreen extends StatefulWidget {
 }
 
 class _TotalExpensesScreenState extends State<TotalExpensesScreen> {
-  int _selectedIndex = 0;
   DateTime _selectedDate = DateTime.now(); // Field to store the selected date
 
   // Method to update the selected date
@@ -30,18 +31,23 @@ class _TotalExpensesScreenState extends State<TotalExpensesScreen> {
     });
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Navigate to the respective screen
-    if (index == 0) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => const Overview()));
-    } else if (index == 1) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => Savings()));
+  void _navigateToScreen(BuildContext context, int index) {
+    if (index != context.read<BottomNavBloc>().state.selectedIndex) {
+      context.read<BottomNavBloc>().add(ChangeBottomNavIndex(index));
+      switch (index) {
+        case 0:
+          Navigator.popAndPushNamed(context, '/home');
+          break;
+        case 1:
+          Navigator.popAndPushNamed(context, '/saving');
+          break;
+        case 2:
+          Navigator.popAndPushNamed(context, '/notifications');
+          break;
+        case 3:
+          Navigator.popAndPushNamed(context, '/reminders');
+          break;
+      }
     }
   }
 
@@ -66,9 +72,15 @@ class _TotalExpensesScreenState extends State<TotalExpensesScreen> {
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: CustomBottomNavBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+      bottomNavigationBar: BlocBuilder<BottomNavBloc, BottomNavState>(
+        builder: (context, state) {
+          return CustomBottomNavBar(
+            selectedIndex: state.selectedIndex,
+            onItemTapped: (index) {
+              _navigateToScreen(context, index);
+            },
+          );
+        },
       ),
       body: ListView(children: [
         // CalendarWidget with a callback to update selected date
@@ -96,7 +108,7 @@ class _TotalExpensesScreenState extends State<TotalExpensesScreen> {
         //     return SpendsCategoriesList(scrollController: scrollController);
         //   },
         // )
-        ExpenseCategoriesList()
+        ExpenseCategoriesList(selectedDate: _selectedDate)
       ]),
     ));
   }
