@@ -1,1206 +1,286 @@
-/* import 'dart:ui';
-import 'package:expensy/views/themes/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
-import 'package:table_calendar/table_calendar.dart'; // Ensure this is imported for TableCalendar
+import 'package:expensy/views/themes/colors.dart';
 import 'package:expensy/views/widgets/app_bar.dart';
-// Ensure you have the CalendarWidget available for use
-import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/calender.dart';
+import 'dart:ui';
+import 'package:expensy/views/widgets/set_reminder_screen_widgets/custom_calendar.dart';
+
+import 'package:expensy/Data/goals_data.dart';
 
 class AddGoalPage extends StatefulWidget {
+  const AddGoalPage({Key? key}) : super(key: key);
+
   @override
-  _AddGoalPageState createState() => _AddGoalPageState();
+  State<AddGoalPage> createState() => _AddGoalPageState();
 }
 
 class _AddGoalPageState extends State<AddGoalPage> {
-  String? _selectedContributionType = 'Yearly';
-  DateTime _selectedDate = DateTime.now(); // Track selected date
-  final List<String> _contributionOptions = [
-    'Yearly',
-    'Monthly',
+  List<Map<String, dynamic>> goals = goals_data;
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _goalTitleController = TextEditingController();
+  String selectedFrequency = 'Select One';
+  DateTime selectedDate = DateTime.now();
+  bool showFrequencyModal = false;
+  bool showDateModal = false;
+
+  final List<String> frequencyOptions = [
+    'Daily',
     'Weekly',
-    'Daily'
+    'Monthly',
+    'Yearly'
   ];
 
-  final TextEditingController _goalTitleController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _newCategoryController = TextEditingController();
-
-  // Update selected date with formatted date
-  void _updateSelectedDate(DateTime selectedDate) {
-    setState(() {
-      _selectedDate = selectedDate; // Update selected date
-    });
+  Widget _buildBlurredBackground(Widget child) {
+    return Stack(
+      children: [
+        BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            color: Colors.black.withOpacity(0.5),
+          ),
+        ),
+        Center(child: child),
+      ],
+    );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Format date to show as "12 February 2024"
-    final formattedDate = DateFormat('d MMMM yyyy').format(_selectedDate);
-
-    return Scaffold(
-      appBar: CustomizedAppBar(
-        title: "Goals",
-        titleAlignment: MainAxisAlignment.center,
-        showImage: false,
-        showBackButton: true,
-        backgroundColor: DarkMode.neutralColor,
-      ),
-      backgroundColor: DarkMode.neutralColor,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Calendar Widget with Background Color
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[850], // Apply background color here
-                borderRadius: BorderRadius.circular(20),
+  Widget _buildFrequencySelector() {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          color: DarkMode.neutralColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: frequencyOptions.length,
+          itemBuilder: (context, index) {
+            final option = frequencyOptions[index];
+            return ListTile(
+              title: Text(
+                option,
+                style: const TextStyle(color: Colors.white),
               ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(30),
-              child: TableCalendar(
-                focusedDay: _selectedDate,
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                selectedDayPredicate: (day) {
-                  return _selectedDate != null && isSameDay(_selectedDate, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDate = selectedDay;
-                  });
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Goal Title Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Goal Title',
-                            style: TextStyle(color: Colors.white)),
-                        SizedBox(height: 10),
-                        TextField(
-                          controller: _goalTitleController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[800],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            hintText: 'Enter goal title',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Amount Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Amount', style: TextStyle(color: Colors.white)),
-                        SizedBox(height: 10),
-                        TextField(
-                          controller: _amountController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[800],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            hintText: 'Enter amount',
-                            suffixText: '\$',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Contribution Type Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: GestureDetector(
-                      onTap: () {
-                        // Open dropdown for contribution type
-                      },
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _selectedContributionType ??
-                                  'Select Contribution Type',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Icon(Icons.arrow_drop_down, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Deadline Date Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: GestureDetector(
-                      onTap: () {
-                        // Open calendar dialog
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Center(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                      sigmaX: 5.0, sigmaY: 5.0),
-                                  child: AlertDialog(
-                                    backgroundColor:
-                                        Colors.black.withOpacity(0.8),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    contentPadding: EdgeInsets.zero,
-                                    content: Column(
-                                      children: [
-                                        TableCalendar(
-                                          focusedDay: _selectedDate,
-                                          firstDay: DateTime.utc(2020, 1, 1),
-                                          lastDay: DateTime.utc(2030, 12, 31),
-                                          selectedDayPredicate: (day) {
-                                            return _selectedDate != null &&
-                                                isSameDay(_selectedDate, day);
-                                          },
-                                          onDaySelected:
-                                              (selectedDay, focusedDay) {
-                                            setState(() {
-                                              _selectedDate = selectedDay;
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: TextField(
-                        readOnly: true,
-                        controller: TextEditingController(text: formattedDate),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.grey[800],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          hintText: 'Select deadline',
-                          suffixIcon:
-                              Icon(Icons.calendar_today, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add Goal button action
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  minimumSize: MaterialStateProperty.all(Size(325, 50)),
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0)),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0))),
-                ),
-                child: Text('ADD GOAL',
-                    style: TextStyle(color: Colors.white, fontSize: 17)),
-              ),
-            ),
-            SizedBox(height: 16),
-          ],
+              onTap: () {
+                setState(() {
+                  selectedFrequency = option;
+                  showFrequencyModal = false;
+                });
+              },
+            );
+          },
         ),
       ),
     );
   }
-}
- */
-/* 
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:expensy/views/themes/colors.dart';
-import 'package:expensy/views/widgets/app_bar.dart';
-import 'package:table_calendar/table_calendar.dart'; // Import TableCalendar
-import 'package:intl/intl.dart'; // Import intl for DateFormat
-
-class AddGoalPage extends StatefulWidget {
-  @override
-  _AddGoalPageState createState() => _AddGoalPageState();
-}
-
-class _AddGoalPageState extends State<AddGoalPage> {
-  String? _selectedContributionType = 'Yearly';
-  String? _selectedDate; // Store the selected date
-  final List<String> _contributionOptions = [
-    'Yearly',
-    'Monthly',
-    'Weekly',
-    'Daily'
-  ];
-
-  // Focus nodes for border change
-  final _goalTitleFocus = FocusNode();
-  final _amountFocus = FocusNode();
-
-  // Focused calendar date
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedCalendarDate;
-
-  // Show dropdown with larger box size for contribution type
-  void _showContributionTypeSelector() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.8, // Dialog width
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
-              child: AlertDialog(
-                backgroundColor: Colors.black.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
-                ),
-                contentPadding: EdgeInsets.zero,
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: _contributionOptions.map((option) {
-                    return ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      title: Text(
-                        option,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18, // Standard font size
-                        ),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _selectedContributionType = option;
-                        });
-                        Navigator.of(context).pop();
-                      },
-                      trailing: option == _selectedContributionType
-                          ? Icon(Icons.check_circle,
-                              color: Colors.blue, size: 28)
-                          : null,
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  // Show the Table Calendar with blurred background
-  void _showCalendar() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.8, // Dialog width
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
-              child: AlertDialog(
-                backgroundColor: Colors.black.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
-                ),
-                contentPadding: EdgeInsets.zero,
-                content: Column(
-                  children: [
-                    TableCalendar(
-                      focusedDay: _focusedDay,
-                      firstDay: DateTime.utc(2020, 1, 1),
-                      lastDay: DateTime.utc(2030, 12, 31),
-                      selectedDayPredicate: (day) {
-                        return _selectedCalendarDate != null &&
-                            isSameDay(_selectedCalendarDate, day);
-                      },
-                      onDaySelected: (selectedDay, focusedDay) {
-                        setState(() {
-                          _selectedCalendarDate = selectedDay;
-                          _focusedDay = focusedDay; // Update focused day
-                          _selectedDate = DateFormat('MMMM d, yyyy')
-                              .format(selectedDay); // Format date
-                        });
-                        Navigator.of(context).pop(); // Close the calendar
-                      },
-                      headerStyle: HeaderStyle(
-                        formatButtonVisible: false,
-                        titleTextStyle: TextStyle(color: Colors.white),
-                      ),
-                      calendarStyle: CalendarStyle(
-                        selectedDecoration: BoxDecoration(
-                          color: Colors.blueAccent,
-                          shape: BoxShape.circle,
-                        ),
-                        todayDecoration: BoxDecoration(
-                          color: Colors.orange,
-                          shape: BoxShape.circle,
-                        ),
-                        todayTextStyle: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    _goalTitleFocus.dispose();
-    _amountFocus.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomizedAppBar(
-        title: "Goals",
-        titleAlignment: MainAxisAlignment.center,
-        showImage: false,
-        showBackButton: true,
-        backgroundColor: DarkMode.neutralColor,
-      ),
-      backgroundColor: DarkMode.neutralColor,
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Goal Title Field
-            Text('Goal Title',
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-            TextField(
-              focusNode: _goalTitleFocus,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.lightBlue, width: 2),
-                ),
-                hintText: 'Enter goal title',
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Amount Field
-            Text('Amount', style: TextStyle(color: Colors.white, fontSize: 16)),
-            TextField(
-              focusNode: _amountFocus,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide(color: Colors.lightBlue, width: 2),
-                ),
-                hintText: 'Enter amount',
-                suffixText: '\$',
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Contribution Type Field
-            Text('Contribution Type',
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-            GestureDetector(
-              onTap: _showContributionTypeSelector,
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade900,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _selectedContributionType ?? 'Select Contribution Type',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Icon(Icons.arrow_drop_down, color: Colors.white),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Deadline Field
-            Text('Deadline',
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-            GestureDetector(
-              onTap: _showCalendar, // Open the calendar on tap
-              child: TextField(
-                readOnly: true,
-                controller: TextEditingController(
-                    text: _selectedDate), // Ensure date is displayed
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey.shade900,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  hintText: _selectedDate ?? 'Select deadline',
-                  suffixIcon: Icon(Icons.calendar_today, color: Colors.white),
-                ),
-              ),
-            ),
-
-            Expanded(child: Container()),
-
-            // Add Goal Button with Glow Effect
-            Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blueAccent.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 15,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Add Goal button press
-                    },
-                    child: Text('ADD GOAL'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      textStyle: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 16), // Bottom padding
-          ],
-        ),
-      ),
-    );
-  }
-}
- */
-/* 
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:expensy/views/themes/colors.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
-import 'package:table_calendar/table_calendar.dart'; // Ensure this is imported for TableCalendar
-import 'package:expensy/views/widgets/app_bar.dart';
-// Ensure you have the CalendarWidget available for use
-import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/calender.dart';
-
-class AddGoalPage extends StatefulWidget {
-  @override
-  _AddGoalPageState createState() => _AddGoalPageState();
-}
-
-class _AddGoalPageState extends State<AddGoalPage> {
-  String? _selectedContributionType = 'Yearly';
-  DateTime _selectedDate = DateTime.now(); // Track selected date
-  final List<String> _contributionOptions = [
-    'Yearly',
-    'Monthly',
-    'Weekly',
-    'Daily'
-  ];
-
-  final TextEditingController _goalTitleController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _newCategoryController = TextEditingController();
-
-  // Update selected date with formatted date
-  void _updateSelectedDate(DateTime selectedDate) {
-    setState(() {
-      _selectedDate = selectedDate; // Update selected date
-    });
-  }
-
-  // Show dropdown for contribution type
-  void _showContributionTypeSelector() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.8, // Dialog width
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
-              child: AlertDialog(
-                backgroundColor: Colors.black.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
-                ),
-                contentPadding: EdgeInsets.zero,
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: _contributionOptions.map((option) {
-                    return ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      title: Text(
-                        option,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18, // Standard font size
-                        ),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _selectedContributionType = option;
-                        });
-                        Navigator.of(context).pop();
-                      },
-                      trailing: option == _selectedContributionType
-                          ? Icon(Icons.check_circle,
-                              color: Colors.blue, size: 28)
-                          : null,
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: DarkMode.backgroundColor,
+          appBar: CustomizedAppBar(
+            title: 'Add Goal',
+            showImage: false,
+            titleAlignment: MainAxisAlignment.center,
           ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Format date to show as "12 February 2024"
-    final formattedDate = DateFormat('d MMMM yyyy').format(_selectedDate);
-
-    return Scaffold(
-      appBar: CustomizedAppBar(
-        title: "Goals",
-        titleAlignment: MainAxisAlignment.center,
-        showImage: false,
-        showBackButton: true,
-        backgroundColor: DarkMode.neutralColor,
-      ),
-      backgroundColor: DarkMode.neutralColor,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Calendar Widget with Background Color
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[850], // Apply background color here
-                borderRadius: BorderRadius.circular(20),
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.all(30),
-              child: TableCalendar(
-                focusedDay: _selectedDate,
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                selectedDayPredicate: (day) {
-                  return _selectedDate != null && isSameDay(_selectedDate, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDate = selectedDay;
-                  });
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Goal Title Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Goal Title',
-                            style: TextStyle(color: Colors.white)),
-                        SizedBox(height: 10),
-                        TextField(
-                          controller: _goalTitleController,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[800],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            hintText: 'Enter goal title',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Amount Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Amount', style: TextStyle(color: Colors.white)),
-                        SizedBox(height: 10),
-                        TextField(
-                          controller: _amountController,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[800],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            hintText: 'Enter amount',
-                            suffixText: '\$',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Contribution Type Field with Dialog
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: GestureDetector(
-                      onTap: _showContributionTypeSelector,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[800],
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              _selectedContributionType ??
-                                  'Select Contribution Type',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Icon(Icons.arrow_drop_down, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Deadline Date Field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: GestureDetector(
-                      onTap: () {
-                        // Open calendar dialog
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Center(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.8,
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                      sigmaX: 5.0, sigmaY: 5.0),
-                                  child: AlertDialog(
-                                    backgroundColor:
-                                        Colors.black.withOpacity(0.8),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    contentPadding: EdgeInsets.zero,
-                                    content: Column(
-                                      children: [
-                                        TableCalendar(
-                                          focusedDay: _selectedDate,
-                                          firstDay: DateTime.utc(2020, 1, 1),
-                                          lastDay: DateTime.utc(2030, 12, 31),
-                                          selectedDayPredicate: (day) {
-                                            return _selectedDate != null &&
-                                                isSameDay(_selectedDate, day);
-                                          },
-                                          onDaySelected:
-                                              (selectedDay, focusedDay) {
-                                            setState(() {
-                                              _selectedDate = selectedDay;
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      child: TextField(
-                        readOnly: true,
-                        controller: TextEditingController(text: formattedDate),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.grey[800],
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          hintText: 'Select deadline',
-                          suffixIcon:
-                              Icon(Icons.calendar_today, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add Goal button action
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  minimumSize: MaterialStateProperty.all(Size(325, 50)),
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0)),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0))),
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Goal Title',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 16),
                 ),
-                child: Text('ADD GOAL',
-                    style: TextStyle(color: Colors.white, fontSize: 17)),
-              ),
-            ),
-            SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-}
- */
-import 'dart:ui';
-import 'package:flutter/material.dart';
-import 'package:expensy/views/themes/colors.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
-import 'package:table_calendar/table_calendar.dart'; // Ensure this is imported for TableCalendar
-import 'package:expensy/views/widgets/app_bar.dart';
-// Ensure you have the CalendarWidget available for use
-import 'package:expensy/views/widgets/total_expenses_screen_widgets.dart/calender.dart';
-
-class AddGoalPage extends StatefulWidget {
-  @override
-  _AddGoalPageState createState() => _AddGoalPageState();
-}
-
-class _AddGoalPageState extends State<AddGoalPage> {
-  String? _selectedContributionType = 'Yearly';
-  DateTime _selectedDate = DateTime.now(); // Track selected date
-  final List<String> _contributionOptions = [
-    'Yearly',
-    'Monthly',
-    'Weekly',
-    'Daily'
-  ];
-
-  final TextEditingController _goalTitleController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _newCategoryController = TextEditingController();
-
-  // Update selected date with formatted date
-  void _updateSelectedDate(DateTime selectedDate) {
-    setState(() {
-      _selectedDate = selectedDate; // Update selected date
-    });
-  }
-
-  // Show dropdown for contribution type
-  void _showContributionTypeSelector() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Center(
-          child: Container(
-            width: MediaQuery.of(context).size.width * 0.8, // Dialog width
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0), // Blur effect
-              child: AlertDialog(
-                backgroundColor: Colors.black.withOpacity(0.8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12), // Rounded corners
-                ),
-                contentPadding: EdgeInsets.zero,
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: _contributionOptions.map((option) {
-                    return ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      title: Text(
-                        option,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18, // Standard font size
-                        ),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          _selectedContributionType = option;
-                        });
-                        Navigator.of(context).pop();
-                      },
-                      trailing: option == _selectedContributionType
-                          ? Icon(Icons.check_circle,
-                              color: Colors.blue, size: 28)
-                          : null,
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Format date to show as "12 February 2024"
-    final formattedDate = DateFormat('d MMMM yyyy').format(_selectedDate);
-
-    return Scaffold(
-      appBar: CustomizedAppBar(
-        title: "Goals",
-        titleAlignment: MainAxisAlignment.center,
-        showImage: false,
-        showBackButton: true,
-        backgroundColor: DarkMode.neutralColor,
-      ),
-      backgroundColor: DarkMode.neutralColor,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 16), // You can adjust the height as needed
-            // Goal Title Field
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Goal Title', style: TextStyle(color: Colors.white)),
-                  SizedBox(height: 10),
-                  TextField(
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
                     controller: _goalTitleController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      hintText: 'Enter goal title',
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                      border: InputBorder.none,
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Amount Field
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Amount', style: TextStyle(color: Colors.white)),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: _amountController,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[800],
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.blue),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      hintText: 'Enter amount',
-                      suffixText: '\$',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-
-            // Contribution Type Field with Dialog
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Contribution Type',
-                          style: TextStyle(color: Colors.white)),
-                      SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: _showContributionTypeSelector,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 12, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[800],
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _selectedContributionType ??
-                                    'Select Contribution Type',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Icon(Icons.arrow_drop_down, color: Colors.white),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ])),
-            SizedBox(height: 16),
-
-            // Deadline Date Field
-            Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Contribution Type',
-                          style: TextStyle(color: Colors.white)),
-                      SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          // Open calendar dialog
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Center(
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.8,
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                        sigmaX: 5.0, sigmaY: 5.0),
-                                    child: AlertDialog(
-                                      backgroundColor:
-                                          Colors.black.withOpacity(0.8),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      contentPadding: EdgeInsets.zero,
-                                      content: Column(
-                                        children: [
-                                          Container(
-                                            color: const Color.fromARGB(
-                                                255, 0, 132, 255),
-                                            child: TableCalendar(
-                                              focusedDay: _selectedDate,
-                                              firstDay:
-                                                  DateTime.utc(2020, 1, 1),
-                                              lastDay:
-                                                  DateTime.utc(2030, 12, 31),
-                                              selectedDayPredicate: (day) {
-                                                return _selectedDate != null &&
-                                                    isSameDay(
-                                                        _selectedDate, day);
-                                              },
-                                              onDaySelected:
-                                                  (selectedDay, focusedDay) {
-                                                setState(() {
-                                                  _selectedDate = selectedDay;
-                                                });
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: TextField(
-                          readOnly: true,
-                          controller:
-                              TextEditingController(text: formattedDate),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.grey[800],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            hintText: 'Select deadline',
-                            suffixIcon:
-                                Icon(Icons.calendar_today, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ])),
-
-            // Place the calendar directly under the "Deadline" input
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[850], // Apply background color here
-                  borderRadius: BorderRadius.circular(20),
                 ),
-                padding: EdgeInsets.all(10),
-                child: TableCalendar(
-                  focusedDay: _selectedDate,
-                  firstDay: DateTime.utc(2020, 1, 1),
-                  lastDay: DateTime.utc(2030, 12, 31),
-                  selectedDayPredicate: (day) {
-                    return _selectedDate != null &&
-                        isSameDay(_selectedDate, day);
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
+                const SizedBox(height: 24),
+                Text(
+                  'Amount',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: _amountController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                      border: InputBorder.none,
+                      suffixText: '\$',
+                      suffixStyle: TextStyle(color: Colors.white),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Contribution Type',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => setState(() => showFrequencyModal = true),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedFrequency,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const Icon(Icons.arrow_drop_down, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Date',
+                  style: TextStyle(color: Colors.grey[400], fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: () => setState(() => showDateModal = true),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          selectedDate.toString().split(' ')[0],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        const Icon(Icons.calendar_today, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DarkMode.buttonColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (_amountController.text.isNotEmpty &&
+                          _goalTitleController.text.isNotEmpty &&
+                          selectedFrequency != "Select One") {
+                        final double? goalAmount =
+                            double.tryParse(_amountController.text);
+
+                        if (goalAmount != null && goalAmount > 0) {
+                          // Add the transaction to the list
+                          setState(() {
+                            goals.add({
+                              "title": _goalTitleController.text,
+                              "current": 0,
+                              "goal": goalAmount,
+                              "Frequency": selectedFrequency,
+                            });
+                          });
+
+                          // Clear inputs
+                          _amountController.clear();
+                          _goalTitleController.clear();
+                          selectedFrequency = "";
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Transaction added successfully!')),
+                          );
+
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Invalid amount. Please enter a valid numeric value.')),
+                          );
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  'All fields are required. Please fill in all the fields.')),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'ADD GOAL',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (showFrequencyModal)
+          _buildBlurredBackground(_buildFrequencySelector()),
+        if (showDateModal)
+          _buildBlurredBackground(
+            Material(
+              color: Colors.transparent,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: DarkMode.neutralColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: CustomCalendar(
+                  selectedDate: selectedDate,
+                  onDateSelected: (formattedDate) {
                     setState(() {
-                      _selectedDate = selectedDay;
+                      selectedDate = formattedDate;
+                      showDateModal = false;
                     });
                   },
                 ),
               ),
             ),
-
-            // Add Goal Button
-            SizedBox(height: 16),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Add Goal button action
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors.blue),
-                  minimumSize: MaterialStateProperty.all(Size(325, 50)),
-                  padding: MaterialStateProperty.all(
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0)),
-                  shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0))),
-                ),
-                child: Text('ADD GOAL',
-                    style: TextStyle(color: Colors.white, fontSize: 17)),
-              ),
-            ),
-            SizedBox(height: 16),
-          ],
-        ),
-      ),
+          ),
+      ],
     );
   }
 }

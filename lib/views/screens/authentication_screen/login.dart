@@ -100,23 +100,33 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.user != null) {
         final String userId = response.user!.id;
-        print('User ID: $userId'); // Print or use the UID as needed
+        final String userEmail = response.user!.email ?? "No email available";
+        final String userName =
+            response.user!.userMetadata?['name'] ?? "No name available";
+
+        print('User ID: $userId');
+        print('User email: $userEmail');
+        print('User name: $userName');
 
         if (!mounted) return;
         Navigator.of(context).pushReplacementNamed('/home');
-      } else {
+      } else if (mounted) {
         setState(() {
           errorMessage = "Login failed. Please try again.";
         });
       }
     } on AuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
+      if (mounted) {
+        setState(() {
+          errorMessage = e.message;
+        });
+      }
     } catch (e) {
-      setState(() {
-        errorMessage = "An unexpected error occurred. Please try again.";
-      });
+      if (mounted) {
+        setState(() {
+          errorMessage = "An unexpected error occurred. Please try again.";
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
